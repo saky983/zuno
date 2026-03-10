@@ -206,7 +206,8 @@ const DEFAULT_REWARDS=[
   {id:'r5',name:'Tanque lleno 10% off',desc:'10% en carga completa',cost:500,icon:'🏆'},
 ];
 
-const CASHIERS=[{u:'cajero1',p:'caja'},{u:'cajero2',p:'caja2'},{u:'admin',p:'admin'}];
+// cajero1/caja = usuario de prueba siempre activo
+const DEFAULT_CASHIER={u:'cajero1',p:'caja'};
 let SS=null,FC=null,TODAY={cl:0,pts:0,rw:0,sales:0};
 
 // Load stations
@@ -236,10 +237,22 @@ loadStations();
 window.doLogin=async()=>{
   const u=document.getElementById('l-user').value.trim();
   const p=document.getElementById('l-pass').value;
-  if(!CASHIERS.find(c=>c.u===u&&c.p===p)){toast('Credenciales incorrectas ❌','err');return;}
-  load(true,'Iniciando sesión...');
+  load(true,'Verificando...');
   try{
-    const sid=document.getElementById('l-stn').value;
+    // Verificar cajero: primero en Firebase, luego usuario de prueba
+    let cajeroOk=false;
+    let cajeroData=null;
+    try{
+      const cSnap=await getDoc(doc(db,'config','cajeros'));
+      if(cSnap.exists()){
+        const found=cSnap.data().list.find(c=>c.user===u&&c.pass===p);
+        if(found){cajeroOk=true;cajeroData=found;}
+      }
+    }catch{}
+    // Usuario de prueba siempre activo
+    if(!cajeroOk&&u===DEFAULT_CASHIER.u&&p===DEFAULT_CASHIER.p){cajeroOk=true;}
+    if(!cajeroOk){toast('Credenciales incorrectas ❌','err');load(false);return;}
+    const sid=cajeroData?cajeroData.stationId:document.getElementById('l-stn').value;
     const snap=await getDoc(doc(db,'config','stations'));
     const stations=snap.exists()?snap.data().list:[];
     SS=stations.find(s=>s.id===sid)||{id:sid,name:'Gasolinera Zuno',multiplier:1};

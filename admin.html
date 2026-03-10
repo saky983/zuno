@@ -137,12 +137,18 @@ body::before{content:'';position:fixed;top:-100px;left:50%;transform:translateX(
     <div class="atab on" onclick="setTab('usuarios')">👥 Usuarios</div>
     <div class="atab" onclick="setTab('verificaciones')">🆔 Verificaciones</div>
     <div class="atab" onclick="setTab('transacciones')">📊 Transacciones</div>
+    <div class="atab" onclick="setTab('cajeros')">🏪 Cajeros</div>
     <div class="atab" onclick="setTab('gasolineras')">⛽ Gasolineras</div>
     <div class="atab" onclick="setTab('premios')">🎁 Premios</div>
   </div>
   <div class="panel on" id="p-usuarios"><div class="rows" id="r-usuarios"><div class="empty">Cargando...</div></div></div>
   <div class="panel" id="p-verificaciones"><div class="rows" id="r-verif"><div class="empty">Cargando...</div></div></div>
   <div class="panel" id="p-transacciones"><div class="rows" id="r-tx"><div class="empty">Cargando...</div></div></div>
+  <div class="panel" id="p-cajeros">
+    <div style="background:var(--goldbg);border:1px solid var(--goldborder);border-radius:12px;padding:14px 16px;margin-bottom:14px;font-size:13px;color:var(--gold);line-height:1.7">⚠️ Usuario de prueba: <strong>cajero1</strong> / <strong>caja</strong></div>
+    <div class="rows" id="r-cajeros"><div class="empty">Cargando...</div></div>
+    <button class="btn btn-ghost" style="margin-top:14px" onclick="oCajero()">+ Crear cajero</button>
+  </div>
   <div class="panel" id="p-gasolineras">
     <div class="rows" id="r-stn"></div>
     <button class="btn btn-ghost" style="margin-top:14px" onclick="addStn()">+ Agregar gasolinera</button>
@@ -278,7 +284,7 @@ async function getStations(){
 }
 
 window.setTab=async tab=>{
-  const names=['usuarios','verificaciones','transacciones','gasolineras','premios'];
+  const names=['usuarios','verificaciones','transacciones','cajeros','gasolineras','premios'];
   document.querySelectorAll('.atab').forEach((t,i)=>t.classList.toggle('on',names[i]===tab));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
   document.getElementById('p-'+tab).classList.add('on');
@@ -317,6 +323,7 @@ async function renderAll(){
     rUsers(users);
     rVerif(pend);
     await rTx();
+    await rCajeros();
     await rStn();
     await rRw();
   }catch(e){console.error(e);}
@@ -534,6 +541,72 @@ window.addStn=async()=>{
     await setDoc(doc(db,'config','stations'),{list:stations});
     toast('Gasolinera agregada ✓','ok');await renderAll();load(false);
   }catch(e){toast('Error al agregar','err');load(false);}
+}
+
+// ===== CAJEROS =====
+async function getCajeros(){
+  try{
+    const s=await getDoc(doc(db,'config','cajeros'));
+    return s.exists()?s.data().list:[];
+  }catch{return [];}
+}
+
+async function rCajeros(){
+  const cajeros=await getCajeros();
+  const stations=await getStations();
+  const el=document.getElementById('r-cajeros');
+  if(!cajeros.length){
+    el.innerHTML='<div class="empty">Sin cajeros creados aún.<br>El usuario de prueba cajero1/caja sigue activo.</div>';
+    return;
+  }
+  el.innerHTML=cajeros.map(c=>{
+    const stn=stations.find(s=>s.id===c.stationId)||{name:'Todas'};
+    return `<div class="ur">
+      <div class="ur-av" style="background:#22c55e">🏪</div>
+      <div class="ur-info">
+        <div class="ur-name">${c.name}</div>
+        <div class="ur-detail">👤 ${c.user} · 🔑 ${c.pass}</div>
+        <div class="ur-pts">⛽ ${stn.name}</div>
+      </div>
+      <div class="ur-actions">
+        <button class="btn-sm" style="background:var(--redbg);border:1px solid var(--redborder);color:var(--red3)" onclick="delCajero('${c.id}')">Eliminar</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.oCajero=async()=>{
+  const stations=await getStations();
+  const stnOpts=stations.map((s,i)=>`${i+1}. ${s.name}`).join('
+');
+  const name=prompt('Nombre del cajero:');if(!name)return;
+  const user=prompt('Usuario (para iniciar sesión):');if(!user)return;
+  const pass=prompt('Contraseña:');if(!pass)return;
+  const stnIdx=parseInt(prompt('¿Cuál gasolinera?
+
+'+stnOpts+'
+
+Escribí el número:'))-1;
+  if(isNaN(stnIdx)||!stations[stnIdx])return;
+  load(true,'Creando cajero...');
+  try{
+    const cajeros=await getCajeros();
+    // Verificar que el usuario no exista
+    if(cajeros.find(c=>c.user===user)){toast('Ese usuario ya existe','err');load(false);return;}
+    cajeros.push({id:'c'+Date.now(),name,user,pass,stationId:stations[stnIdx].id});
+    await setDoc(doc(db,'config','cajeros'),{list:cajeros});
+    toast('Cajero creado ✓','ok');await renderAll();load(false);
+  }catch(e){toast('Error al crear cajero','err');load(false);}
+}
+
+window.delCajero=async id=>{
+  if(!confirm('¿Eliminar este cajero?'))return;
+  load(true,'Eliminando...');
+  try{
+    const cajeros=await getCajeros();
+    await setDoc(doc(db,'config','cajeros'),{list:cajeros.filter(c=>c.id!==id)});
+    toast('Cajero eliminado','ok');await renderAll();load(false);
+  }catch(e){toast('Error al eliminar','err');load(false);}
 }
 </script>
 </body>
