@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Zuno – Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0a;--s1:#111;--s2:#1a1a1a;--s3:#222;--border:#2a2a2a;--red:#e02020;--red2:#ff3333;--red3:#ff6666;--redbg:rgba(224,32,32,0.08);--redborder:rgba(224,32,32,0.25);--green:#22c55e;--greenbg:rgba(34,197,94,0.08);--greenborder:rgba(34,197,94,0.25);--gold:#f5a623;--goldbg:rgba(245,166,35,0.08);--goldborder:rgba(245,166,35,0.25);--purple:#a855f7;--purplebg:rgba(168,85,247,0.08);--purpleborder:rgba(168,85,247,0.25);--text:#f5f5f5;--text2:#a0a0a0;--text3:#555}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;max-width:480px;margin:0 auto;overflow-x:hidden;padding-bottom:40px}
+body::before{content:'';position:fixed;top:-100px;left:50%;transform:translateX(-50%);width:300px;height:300px;background:radial-gradient(circle,rgba(168,85,247,0.08),transparent 70%);pointer-events:none;z-index:0}
+.scr{display:none;flex-direction:column;min-height:100vh;position:relative;z-index:1}
+.scr.on{display:flex;animation:scrIn .3s ease}
+@keyframes scrIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:8px}
+.field input{width:100%;padding:14px 16px;background:var(--s2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:'Outfit',sans-serif;font-size:15px;outline:none;transition:border-color .2s,box-shadow .2s}
+.field input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(168,85,247,0.1)}
+.field input::placeholder{color:var(--text3)}
+.btn{display:block;width:100%;padding:15px;border:none;border-radius:10px;font-family:'Bebas Neue';font-size:18px;letter-spacing:1.5px;cursor:pointer;transition:all .2s;margin-top:8px}
+.btn:active{transform:scale(.98)}
+.btn-purple{background:linear-gradient(135deg,var(--purple),#7c3aed);color:#fff;box-shadow:0 4px 20px rgba(168,85,247,0.35)}
+.btn-purple:hover{box-shadow:0 6px 28px rgba(168,85,247,0.5);transform:translateY(-1px)}
+.btn-green{background:linear-gradient(135deg,var(--green),#16a34a);color:#000}
+.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--text2);margin-top:8px}
+.btn-sm{padding:8px 14px;border-radius:8px;border:none;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Outfit'}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--s2);border:1px solid var(--border);color:var(--text);padding:12px 20px;border-radius:10px;font-size:14px;font-weight:500;z-index:9998;transition:transform .35s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.ok{border-color:var(--green);color:var(--green)}
+.toast.err{border-color:var(--red2);color:var(--red2)}
+.loading{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:500;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.loading.show{display:flex}
+.spinner{width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--purple);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading p{font-size:14px;color:var(--text2)}
+.mov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(14px);z-index:200;align-items:flex-end;justify-content:center}
+.mov.open{display:flex}
+.modal{background:var(--s1);border:1px solid var(--border);border-top:2px solid var(--purple);border-radius:20px 20px 0 0;padding:28px 22px 48px;width:100%;max-width:480px;animation:modalIn .3s ease}
+@keyframes modalIn{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal h3{font-family:'Bebas Neue';font-size:24px;letter-spacing:1px;margin-bottom:6px}
+.modal p{color:var(--text2);font-size:14px;margin-bottom:18px;line-height:1.6}
+/* LOGIN */
+#s-login{justify-content:center;align-items:center;padding:40px 28px;gap:4px;background:linear-gradient(180deg,#0d0315,var(--bg) 50%)}
+.logo-icon{width:80px;height:80px;border-radius:20px;margin:0 auto 16px;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:38px;box-shadow:0 8px 32px rgba(168,85,247,0.45);animation:pp 3s ease-in-out infinite}
+@keyframes pp{0%,100%{box-shadow:0 8px 32px rgba(168,85,247,.45)}50%{box-shadow:0 8px 48px rgba(168,85,247,.7)}}
+.logo-name{font-family:'Bebas Neue';font-size:42px;letter-spacing:3px;text-align:center}
+.logo-sub{font-size:13px;color:var(--text3);text-align:center;margin-top:4px;margin-bottom:32px}
+.login-box{width:100%;background:var(--s1);border:1px solid var(--border);border-top:2px solid var(--purple);border-radius:16px;padding:24px}
+/* MAIN */
+#s-main{padding:0 0 20px}
+.topbar{background:linear-gradient(160deg,#0d0315,var(--bg));padding:20px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:relative}
+.topbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--purple),transparent)}
+.topbar h1{font-family:'Bebas Neue';font-size:22px;letter-spacing:1px;color:var(--purple)}
+.out-btn{padding:8px 14px;background:var(--redbg);border:1px solid var(--redborder);border-radius:8px;color:var(--red3);font-size:12px;font-weight:700;cursor:pointer}
+.alert-ban{margin:14px 22px 0;background:var(--goldbg);border:1px solid var(--goldborder);border-radius:12px;padding:12px 16px;display:none;align-items:center;gap:10px;cursor:pointer;transition:background .2s}
+.alert-ban:hover{background:rgba(245,166,35,.14)}
+.alert-ct{width:24px;height:24px;border-radius:50%;background:var(--gold);color:#000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex-shrink:0}
+.alert-tx{font-size:13px;color:var(--gold);font-weight:600}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px 22px 0}
+.kpi{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:16px;position:relative;overflow:hidden}
+.kpi::after{content:'';position:absolute;top:-30px;right:-30px;width:80px;height:80px;border-radius:50%;opacity:.12}
+.k1::after{background:var(--red)}.k2::after{background:var(--green)}.k3::after{background:var(--gold)}.k4::after{background:var(--purple)}
+.kpi-l{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;font-weight:700}
+.kpi-v{font-family:'Bebas Neue';font-size:32px;letter-spacing:1px}
+.k1 .kpi-v{color:var(--red2)}.k2 .kpi-v{color:var(--green)}.k3 .kpi-v{color:var(--gold)}.k4 .kpi-v{color:var(--purple)}
+.admin-tabs{display:flex;gap:8px;padding:16px 22px 0;overflow-x:auto;scrollbar-width:none}
+.admin-tabs::-webkit-scrollbar{display:none}
+.atab{padding:9px 16px;border-radius:100px;border:1.5px solid var(--border);background:var(--s2);color:var(--text3);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
+.atab.on{background:var(--purple);border-color:var(--purple);color:#fff;box-shadow:0 2px 16px rgba(168,85,247,.35)}
+.panel{padding:14px 22px 0;display:none}
+.panel.on{display:block}
+.rows{display:flex;flex-direction:column;gap:8px}
+.ur{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;align-items:flex-start;gap:12px;animation:scrIn .3s ease}
+.ur-av{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:20px;color:#fff;flex-shrink:0}
+.ur-info{flex:1;min-width:0}
+.ur-name{font-weight:700;font-size:14px}
+.ur-detail{font-size:12px;color:var(--text3);margin-top:3px;line-height:1.5}
+.ur-pts{font-size:12px;color:var(--gold);font-weight:600;margin-top:2px}
+.ur-actions{display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700}
+.badge.v{background:var(--greenbg);color:var(--green);border:1px solid var(--greenborder)}
+.badge.p{background:var(--goldbg);color:var(--gold);border:1px solid var(--goldborder)}
+.dui-img-wrap{width:100%;border-radius:12px;overflow:hidden;margin-bottom:16px;background:var(--s2);min-height:150px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border)}
+.dui-img-wrap img{width:100%;border-radius:12px;display:block}
+.dui-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.di{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:12px}
+.di-l{font-size:10px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+.di-v{font-weight:700;font-size:14px}
+.approve-row{display:flex;gap:10px}
+.approve-row button{flex:1;padding:14px;border-radius:10px;border:none;font-family:'Bebas Neue';font-size:16px;letter-spacing:1px;cursor:pointer;transition:all .2s}
+.app-btn{background:var(--green);color:#000;box-shadow:0 4px 16px rgba(34,197,94,.3)}
+.rej-btn{background:var(--redbg);border:1.5px solid var(--redborder)!important;color:var(--red3)}
+.tx-row{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px}
+.tx-ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.tx-info{flex:1}.tx-name{font-weight:600;font-size:14px}.tx-det{font-size:12px;color:var(--text3);margin-top:2px}
+.tx-pts{font-family:'Bebas Neue';font-size:17px;letter-spacing:.5px}
+.earn{color:var(--red2)}.spend{color:var(--green)}
+.stn-row,.rw-row{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px}
+.stn-info,.rw-info{flex:1}
+.stn-name,.rw-name{font-weight:700;font-size:14px}
+.stn-addr,.rw-desc{font-size:12px;color:var(--text3);margin-top:2px}
+.stn-multi{font-family:'Bebas Neue';font-size:16px;color:var(--gold)}
+.rw-cost{font-size:12px;color:var(--gold);font-weight:700;margin-top:3px}
+.empty{text-align:center;color:var(--text3);padding:40px;font-size:14px;line-height:1.7}
+</style>
+</head>
+<body>
+
+<div id="s-login" class="scr on">
+  <div class="logo-icon">⚙️</div>
+  <div class="logo-name">ZUNO</div>
+  <div class="logo-sub">Panel de Administración 🇸🇻</div>
+  <div class="login-box">
+    <div class="field"><label>Usuario</label><input type="text" id="l-u" placeholder="admin" value="admin"></div>
+    <div class="field"><label>Contraseña</label><input type="password" id="l-p" placeholder="••••••" value="admin"></div>
+    <button class="btn btn-purple" onclick="doLogin()">Entrar al panel →</button>
+  </div>
+</div>
+
+<div id="s-main" class="scr">
+  <div class="topbar">
+    <div><h1>⚙️ Admin · Zuno</h1></div>
+    <button class="out-btn" onclick="doLogout()">Salir 🚪</button>
+  </div>
+  <div class="alert-ban" id="alert-ban" onclick="setTab('verificaciones')">
+    <div class="alert-ct" id="alert-n">0</div>
+    <div class="alert-tx" id="alert-tx">usuarios pendientes de verificación</div>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi k1"><div class="kpi-l">Usuarios activos</div><div class="kpi-v" id="k1">—</div></div>
+    <div class="kpi k2"><div class="kpi-l">Puntos emitidos</div><div class="kpi-v" id="k2">—</div></div>
+    <div class="kpi k3"><div class="kpi-l">Visitas totales</div><div class="kpi-v" id="k3">—</div></div>
+    <div class="kpi k4"><div class="kpi-l">Canjes totales</div><div class="kpi-v" id="k4">—</div></div>
+  </div>
+  <div class="admin-tabs">
+    <div class="atab on" onclick="setTab('usuarios')">👥 Usuarios</div>
+    <div class="atab" onclick="setTab('verificaciones')">🆔 Verificaciones</div>
+    <div class="atab" onclick="setTab('transacciones')">📊 Transacciones</div>
+    <div class="atab" onclick="setTab('gasolineras')">⛽ Gasolineras</div>
+    <div class="atab" onclick="setTab('premios')">🎁 Premios</div>
+  </div>
+  <div class="panel on" id="p-usuarios"><div class="rows" id="r-usuarios"><div class="empty">Cargando...</div></div></div>
+  <div class="panel" id="p-verificaciones"><div class="rows" id="r-verif"><div class="empty">Cargando...</div></div></div>
+  <div class="panel" id="p-transacciones"><div class="rows" id="r-tx"><div class="empty">Cargando...</div></div></div>
+  <div class="panel" id="p-gasolineras">
+    <div class="rows" id="r-stn"></div>
+    <button class="btn btn-ghost" style="margin-top:14px" onclick="addStn()">+ Agregar gasolinera</button>
+  </div>
+  <div class="panel" id="p-premios">
+    <div class="rows" id="r-rw"></div>
+    <button class="btn btn-ghost" style="margin-top:14px" onclick="addRw()">+ Agregar premio</button>
+  </div>
+</div>
+
+<!-- MODAL DUI -->
+<div class="mov" id="m-dui">
+  <div class="modal">
+    <h3>🆔 Verificación de DUI</h3>
+    <p id="m-dui-sub">—</p>
+    <div class="dui-img-wrap">
+      <img id="dui-img" src="" alt="Foto DUI" onerror="this.parentElement.innerHTML='<div style=padding:32px;color:var(--text3);font-size:13px;text-align:center>📷 No se pudo cargar la foto</div>'">
+    </div>
+    <div class="dui-grid">
+      <div class="di"><div class="di-l">Nombre</div><div class="di-v" id="di-name">—</div></div>
+      <div class="di"><div class="di-l">DUI</div><div class="di-v" id="di-dui">—</div></div>
+      <div class="di"><div class="di-l">Teléfono</div><div class="di-v" id="di-phone">—</div></div>
+      <div class="di"><div class="di-l">Registrado</div><div class="di-v" id="di-date">—</div></div>
+    </div>
+    <div class="approve-row">
+      <button class="app-btn" onclick="approve()">✓ Aprobar</button>
+      <button class="rej-btn" onclick="reject()">✗ Rechazar</button>
+    </div>
+    <button class="btn btn-ghost" style="margin-top:10px" onclick="closeM('m-dui')">Cancelar</button>
+  </div>
+</div>
+
+<!-- MODAL PUNTOS -->
+<div class="mov" id="m-pts">
+  <div class="modal">
+    <h3>± Ajuste de puntos</h3>
+    <p id="m-pts-sub">—</p>
+    <div class="field"><label>Puntos (negativo para restar)</label><input type="number" id="m-pts-v" placeholder="Ej: 100 o -50"></div>
+    <div class="field"><label>Motivo</label><input type="text" id="m-pts-n" placeholder="Ej: Promoción especial"></div>
+    <button class="btn btn-purple" onclick="confPts()">Aplicar cambio →</button>
+    <button class="btn btn-ghost" onclick="closeM('m-pts')">Cancelar</button>
+  </div>
+</div>
+
+<!-- MODAL PREMIO -->
+<div class="mov" id="m-rw">
+  <div class="modal">
+    <h3 id="m-rw-t">🎁 Editar premio</h3>
+    <p id="m-rw-sub">—</p>
+    <div class="field"><label>Costo en puntos</label><input type="number" id="m-rw-v" placeholder="Ej: 100"></div>
+    <button class="btn btn-purple" onclick="confRw()">Guardar cambio →</button>
+    <button class="btn btn-ghost" onclick="closeM('m-rw')">Cancelar</button>
+  </div>
+</div>
+
+<div class="loading" id="loading"><div class="spinner"></div><p id="load-txt">Cargando...</p></div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, addDoc, query, where, getDocs, orderBy, limit, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyAqXjnH6WrXuEQivE3RGwvav1qyFOOyoeY",
+  authDomain:"zuno-1285e.firebaseapp.com",
+  projectId:"zuno-1285e",
+  storageBucket:"zuno-1285e.firebasestorage.app",
+  messagingSenderId:"234427184784",
+  appId:"1:234427184784:web:1bdb29f6f2a1f4e85b4a15"
+});
+const db = getFirestore(app);
+
+const COLS=['#e02020','#22c55e','#3b82f6','#f59e0b','#a855f7'];
+const uC=id=>COLS[Math.abs([...id].reduce((a,c)=>a+c.charCodeAt(0),0))%COLS.length];
+const uI=n=>n.charAt(0).toUpperCase();
+const fD=ts=>ts?new Date(ts).toLocaleDateString('es-SV'):'—';
+const fDN=()=>new Date().toLocaleDateString('es-SV');
+
+const DEFAULT_REWARDS=[
+  {id:'r1',name:'$1 de descuento',desc:'En próxima carga de combustible',cost:50,icon:'💵'},
+  {id:'r2',name:'Lavado de auto',desc:'Lavado básico gratis',cost:200,icon:'🚗'},
+  {id:'r3',name:'$3 en tienda',desc:'Válido en tienda de conveniencia',cost:150,icon:'🏪'},
+  {id:'r4',name:'$5 en combustible',desc:'Descuento directo en próxima carga',cost:250,icon:'⛽'},
+  {id:'r5',name:'Tanque lleno 10% off',desc:'10% de descuento en carga completa',cost:500,icon:'🏆'},
+];
+
+const DEFAULT_STATIONS=[
+  {id:'s1',name:'Zuno – San Salvador Centro',addr:'Av. España, San Salvador',multiplier:1},
+  {id:'s2',name:'Zuno – Santa Tecla',addr:'Blvd. Merliot, La Libertad',multiplier:1.5},
+  {id:'s3',name:'Zuno – Soyapango',addr:'Calle Antigua, Soyapango',multiplier:1},
+  {id:'s4',name:'Zuno – San Miguel',addr:'Carretera Panamericana, San Miguel',multiplier:1},
+];
+
+let eUID=null, eRID=null, vUID=null, vUDOC=null;
+
+const load=(s,t='Cargando...')=>{document.getElementById('loading').classList.toggle('show',s);document.getElementById('load-txt').textContent=t;}
+const toast=(msg,type='')=>{const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');setTimeout(()=>t.className='toast',3000);}
+window.closeM=id=>document.getElementById(id).classList.remove('open');
+document.querySelectorAll('.mov').forEach(ov=>ov.addEventListener('click',e=>{if(e.target===ov)ov.classList.remove('open')}));
+
+window.doLogin=async()=>{
+  if(document.getElementById('l-u').value==='admin'&&document.getElementById('l-p').value==='admin'){
+    load(true,'Iniciando sesión...');
+    await initConfig();
+    await renderAll();
+    load(false);
+    document.getElementById('s-login').classList.remove('on');
+    document.getElementById('s-main').classList.add('on');
+  } else { toast('Credenciales incorrectas ❌','err'); }
+}
+
+window.doLogout=()=>{
+  document.getElementById('s-main').classList.remove('on');
+  document.getElementById('s-login').classList.add('on');
+}
+
+async function initConfig(){
+  // Init rewards if not exist
+  const rSnap=await getDoc(doc(db,'config','rewards'));
+  if(!rSnap.exists()) await setDoc(doc(db,'config','rewards'),{list:DEFAULT_REWARDS});
+  // Init stations if not exist
+  const sSnap=await getDoc(doc(db,'config','stations'));
+  if(!sSnap.exists()) await setDoc(doc(db,'config','stations'),{list:DEFAULT_STATIONS});
+}
+
+async function getRewards(){
+  const s=await getDoc(doc(db,'config','rewards'));
+  return s.exists()?s.data().list:DEFAULT_REWARDS;
+}
+async function getStations(){
+  const s=await getDoc(doc(db,'config','stations'));
+  return s.exists()?s.data().list:DEFAULT_STATIONS;
+}
+
+window.setTab=async tab=>{
+  const names=['usuarios','verificaciones','transacciones','gasolineras','premios'];
+  document.querySelectorAll('.atab').forEach((t,i)=>t.classList.toggle('on',names[i]===tab));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.getElementById('p-'+tab).classList.add('on');
+  load(true);
+  await renderAll();
+  load(false);
+}
+
+async function renderAll(){
+  try{
+    const snap=await getDocs(query(collection(db,'users'),where('role','==','client')));
+    const users=snap.docs.map(d=>({id:d.id,...d.data()}));
+    const pend=users.filter(u=>!u.verified);
+    const totalPts=users.reduce((s,u)=>s+u.points,0);
+    const totalVis=users.reduce((s,u)=>s+u.visits,0);
+
+    // KPIs
+    document.getElementById('k1').textContent=users.length;
+    document.getElementById('k2').textContent=totalPts.toLocaleString();
+    document.getElementById('k3').textContent=totalVis;
+
+    // Count redeems from transactions
+    try{
+      const txSnap=await getDocs(query(collection(db,'transactions'),where('type','==','redeem')));
+      document.getElementById('k4').textContent=txSnap.size;
+    }catch{document.getElementById('k4').textContent='0';}
+
+    // Alert
+    const ab=document.getElementById('alert-ban');
+    if(pend.length){
+      ab.style.display='flex';
+      document.getElementById('alert-n').textContent=pend.length;
+      document.getElementById('alert-tx').textContent='usuario'+(pend.length>1?'s':'')+' pendiente'+(pend.length>1?'s':'')+' de verificación';
+    } else { ab.style.display='none'; }
+
+    rUsers(users);
+    rVerif(pend);
+    await rTx();
+    await rStn();
+    await rRw();
+  }catch(e){console.error(e);}
+}
+
+function rUsers(users){
+  if(!users.length){document.getElementById('r-usuarios').innerHTML='<div class="empty">Sin usuarios registrados aún</div>';return;}
+  document.getElementById('r-usuarios').innerHTML=users.map(u=>`
+    <div class="ur">
+      <div class="ur-av" style="background:${uC(u.id)}">${uI(u.name)}</div>
+      <div class="ur-info">
+        <div class="ur-name">${u.name}</div>
+        <div class="ur-detail">📱 ${u.phone} · 🆔 ${u.dui} · ${u.code}</div>
+        <div class="ur-pts">⭐ ${u.points.toLocaleString()} pts · ${u.visits} visitas · ${fD(u.registeredAt)}</div>
+      </div>
+      <div class="ur-actions">
+        <span class="badge ${u.verified?'v':'p'}">${u.verified?'✅ Activo':'⏳ Pendiente'}</span>
+        <button class="btn-sm" style="background:var(--goldbg);border:1px solid var(--goldborder);color:var(--gold)" onclick="oPts('${u.id}','${u.name}',${u.points})">± Pts</button>
+        ${!u.verified?`<button class="btn-sm" style="background:var(--purplebg);border:1px solid var(--purpleborder);color:var(--purple)" onclick="oDUI('${u.id}')">Ver DUI</button>`:''}
+      </div>
+    </div>`).join('');
+}
+
+function rVerif(pend){
+  if(!pend.length){document.getElementById('r-verif').innerHTML='<div class="empty">✅ Sin verificaciones pendientes<br>Todos los usuarios están activos</div>';return;}
+  document.getElementById('r-verif').innerHTML=pend.map(u=>`
+    <div class="ur">
+      <div class="ur-av" style="background:${uC(u.id)}">${uI(u.name)}</div>
+      <div class="ur-info">
+        <div class="ur-name">${u.name}</div>
+        <div class="ur-detail">📱 ${u.phone} · 🆔 DUI: ${u.dui}</div>
+        <div class="ur-pts">Registrado: ${fD(u.registeredAt)}</div>
+      </div>
+      <div class="ur-actions">
+        <button class="btn-sm" style="background:var(--purplebg);border:1px solid var(--purpleborder);color:var(--purple)" onclick="oDUI('${u.id}')">Revisar →</button>
+      </div>
+    </div>`).join('');
+}
+
+async function rTx(){
+  try{
+    const snap=await getDocs(query(collection(db,'transactions'),orderBy('ts','desc'),limit(40)));
+    if(snap.empty){document.getElementById('r-tx').innerHTML='<div class="empty">Sin transacciones aún</div>';return;}
+    document.getElementById('r-tx').innerHTML=snap.docs.map(d=>{
+      const t=d.data();
+      return `<div class="tx-row">
+        <div class="tx-ic" style="background:${t.type==='earn'?'rgba(224,32,32,.1)':'rgba(34,197,94,.1)'}">${t.type==='earn'?'⛽':'🎁'}</div>
+        <div class="tx-info"><div class="tx-name">${t.user}</div><div class="tx-det">${t.station||t.reward||'—'} · ${t.date}</div></div>
+        <div class="tx-pts ${t.type==='earn'?'earn':'spend'}">${t.type==='earn'?'+':'-'}${t.pts} pts</div>
+      </div>`;
+    }).join('');
+  }catch(e){document.getElementById('r-tx').innerHTML='<div class="empty">Error al cargar transacciones</div>';}
+}
+
+async function rStn(){
+  const stations=await getStations();
+  document.getElementById('r-stn').innerHTML=stations.map(s=>`
+    <div class="stn-row">
+      <div style="font-size:24px">⛽</div>
+      <div class="stn-info">
+        <div class="stn-name">${s.name}</div>
+        <div class="stn-addr">📍 ${s.addr}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+        <div class="stn-multi">${s.multiplier>1?'★ '+s.multiplier+'× pts':'1 pt / $1'}</div>
+        <button class="btn-sm" style="background:var(--goldbg);border:1px solid var(--goldborder);color:var(--gold)" onclick="eStn('${s.id}')">Editar</button>
+      </div>
+    </div>`).join('');
+}
+
+async function rRw(){
+  const rewards=await getRewards();
+  document.getElementById('r-rw').innerHTML=rewards.map(r=>`
+    <div class="rw-row">
+      <div style="font-size:26px">${r.icon}</div>
+      <div class="rw-info">
+        <div class="rw-name">${r.name}</div>
+        <div class="rw-desc">${r.desc}</div>
+        <div class="rw-cost">⭐ ${r.cost} pts</div>
+      </div>
+      <button class="btn-sm" style="background:var(--goldbg);border:1px solid var(--goldborder);color:var(--gold)" onclick="oRw('${r.id}')">Editar</button>
+    </div>`).join('');
+}
+
+// DUI
+window.oDUI=async id=>{
+  load(true);
+  const snap=await getDoc(doc(db,'users',id));
+  if(!snap.exists()){load(false);return;}
+  vUID=id; vUDOC={id,...snap.data()};
+  document.getElementById('m-dui-sub').textContent='Revisá el DUI de '+vUDOC.name+' y decidí si aprobar su cuenta.';
+  document.getElementById('di-name').textContent=vUDOC.name;
+  document.getElementById('di-dui').textContent=vUDOC.dui;
+  document.getElementById('di-phone').textContent=vUDOC.phone;
+  document.getElementById('di-date').textContent=fD(vUDOC.registeredAt);
+  const img=document.getElementById('dui-img');
+  if(vUDOC.duiPhoto){img.src=vUDOC.duiPhoto;img.style.display='block';}
+  else{img.onerror();}
+  load(false);
+  document.getElementById('m-dui').classList.add('open');
+}
+
+window.approve=async()=>{
+  if(!vUID)return;
+  load(true,'Aprobando...');
+  try{
+    await updateDoc(doc(db,'users',vUID),{verified:true});
+    closeM('m-dui');toast('✅ '+vUDOC.name+' aprobado','ok');
+    await renderAll();load(false);
+  }catch(e){toast('Error al aprobar','err');load(false);}
+}
+
+window.reject=async()=>{
+  if(!vUID)return;
+  if(!confirm('¿Seguro que querés rechazar y eliminar a '+vUDOC.name+'?'))return;
+  load(true,'Rechazando...');
+  try{
+    await deleteDoc(doc(db,'users',vUID));
+    closeM('m-dui');toast('❌ '+vUDOC.name+' rechazado','err');
+    await renderAll();load(false);
+  }catch(e){toast('Error al rechazar','err');load(false);}
+}
+
+// Puntos
+window.oPts=(id,name,pts)=>{
+  eUID=id;
+  document.getElementById('m-pts-sub').textContent='Ajuste para: '+name+' — actual: '+pts+' pts';
+  document.getElementById('m-pts-v').value='';document.getElementById('m-pts-n').value='';
+  document.getElementById('m-pts').classList.add('open');
+}
+
+window.confPts=async()=>{
+  const pts=parseInt(document.getElementById('m-pts-v').value);
+  const note=document.getElementById('m-pts-n').value.trim()||'Ajuste admin';
+  if(isNaN(pts)||pts===0){toast('Ingresá los puntos','err');return;}
+  load(true,'Aplicando ajuste...');
+  try{
+    const entry={earn:pts>0,name:note,pts:Math.abs(pts),date:fDN()};
+    await updateDoc(doc(db,'users',eUID),{
+      points:increment(pts),
+      history:arrayUnion(entry)
+    });
+    await addDoc(collection(db,'transactions'),{
+      userId:eUID,user:'Admin',station:note,
+      pts:Math.abs(pts),type:pts>0?'earn':'redeem',date:fDN(),ts:Date.now()
+    });
+    closeM('m-pts');toast((pts>0?'+':'')+pts+' pts aplicados ✓','ok');
+    await renderAll();load(false);
+  }catch(e){toast('Error al ajustar','err');load(false);}
+}
+
+// Premios
+window.oRw=async id=>{
+  eRID=id;
+  const rewards=await getRewards();
+  const r=rewards.find(x=>x.id===id);
+  document.getElementById('m-rw-t').textContent='🎁 '+r.name;
+  document.getElementById('m-rw-sub').textContent='Costo actual: '+r.cost+' puntos';
+  document.getElementById('m-rw-v').value=r.cost;
+  document.getElementById('m-rw').classList.add('open');
+}
+
+window.confRw=async()=>{
+  const cost=parseInt(document.getElementById('m-rw-v').value);
+  if(!cost||cost<=0){toast('Ingresá un costo válido','err');return;}
+  load(true,'Guardando...');
+  try{
+    const rewards=await getRewards();
+    const idx=rewards.findIndex(x=>x.id===eRID);
+    if(idx>=0)rewards[idx].cost=cost;
+    await setDoc(doc(db,'config','rewards'),{list:rewards});
+    closeM('m-rw');toast('Premio actualizado ✓','ok');
+    await renderAll();load(false);
+  }catch(e){toast('Error al guardar','err');load(false);}
+}
+
+window.addRw=async()=>{
+  const name=prompt('Nombre del premio:');if(!name)return;
+  const icon=prompt('Emoji del premio:')||'🎁';
+  const desc=prompt('Descripción breve:')||'';
+  const cost=parseInt(prompt('Costo en puntos:'));
+  if(!cost||cost<=0)return;
+  load(true,'Agregando...');
+  try{
+    const rewards=await getRewards();
+    rewards.push({id:'r'+Date.now(),name,icon,desc,cost});
+    await setDoc(doc(db,'config','rewards'),{list:rewards});
+    toast('Premio agregado ✓','ok');await renderAll();load(false);
+  }catch(e){toast('Error al agregar','err');load(false);}
+}
+
+// Gasolineras
+window.eStn=async id=>{
+  const stations=await getStations();
+  const s=stations.find(x=>x.id===id);
+  const multi=parseFloat(prompt('Multiplicador de puntos para:\n'+s.name+'\n\nActual: '+s.multiplier+'x\n(1 = normal, 1.5 = 50% más puntos):'));
+  if(!multi||multi<=0)return;
+  load(true,'Guardando...');
+  try{
+    const idx=stations.findIndex(x=>x.id===id);
+    if(idx>=0)stations[idx].multiplier=multi;
+    await setDoc(doc(db,'config','stations'),{list:stations});
+    toast('Gasolinera actualizada ✓','ok');await renderAll();load(false);
+  }catch(e){toast('Error al guardar','err');load(false);}
+}
+
+window.addStn=async()=>{
+  const name=prompt('Nombre de la gasolinera:');if(!name)return;
+  const addr=prompt('Dirección:')||'El Salvador';
+  const multi=parseFloat(prompt('Multiplicador de puntos (1 = normal):')||'1');
+  load(true,'Agregando...');
+  try{
+    const stations=await getStations();
+    stations.push({id:'s'+Date.now(),name,addr,multiplier:multi||1});
+    await setDoc(doc(db,'config','stations'),{list:stations});
+    toast('Gasolinera agregada ✓','ok');await renderAll();load(false);
+  }catch(e){toast('Error al agregar','err');load(false);}
+}
+</script>
+</body>
+</html>
