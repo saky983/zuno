@@ -52,12 +52,6 @@ body::before{content:'';position:fixed;top:-100px;left:50%;transform:translateX(
 .logo-name{font-family:'Bebas Neue';font-size:52px;letter-spacing:6px}
 .logo-sub{font-size:13px;color:var(--text3);margin-top:4px}
 .login-box{width:100%;background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:24px}
-.dui-drop{width:100%;border:2px dashed var(--border);border-radius:12px;padding:24px 20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--s2)}
-.dui-drop:hover,.dui-drop.has{border-color:var(--green);background:var(--greenbg)}
-.dui-drop .dd-ic{font-size:28px;margin-bottom:6px}
-.dui-drop .dd-t{font-size:13px;font-weight:600;margin-bottom:3px}
-.dui-drop .dd-s{font-size:11px;color:var(--text3)}
-.dui-prev-img{width:100%;height:130px;object-fit:cover;border-radius:8px;margin-top:10px;display:none}
 #s-home{padding:0 0 20px}
 .hdr{background:linear-gradient(160deg,#180303,var(--bg));padding:28px 22px 24px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
 .hdr::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(224,32,32,0.12),transparent 70%)}
@@ -174,18 +168,8 @@ body::before{content:'';position:fixed;top:-100px;left:50%;transform:translateX(
       <div class="field"><label>DUI (sin guión)</label><input type="text" id="r-dui" placeholder="012345678" maxlength="9"></div>
       <div class="field"><label>Teléfono</label><input type="tel" id="r-phone" placeholder="7000-0000"></div>
       <div class="field"><label>Contraseña</label><input type="password" id="r-pass" placeholder="Mínimo 6 caracteres"></div>
-      <div class="field">
-        <label>Foto de tu DUI</label>
-        <div class="dui-drop" id="dui-drop" onclick="document.getElementById('dui-file').click()">
-          <div class="dd-ic">📷</div>
-          <div class="dd-t">Toca para subir foto</div>
-          <div class="dd-s">Parte frontal de tu DUI</div>
-          <img id="dui-prev-img" class="dui-prev-img" alt="">
-        </div>
-        <input type="file" id="dui-file" accept="image/*" capture="environment" style="display:none" onchange="prevDUI(this)">
-      </div>
       <button class="btn btn-red" onclick="doRegister()">Crear cuenta →</button>
-      <p style="text-align:center;margin-top:12px;font-size:12px;color:var(--text3);line-height:1.6">Tu DUI se verifica en menos de 24h.<br>Mientras tanto podés acumular puntos.</p>
+      <p style="text-align:center;margin-top:12px;font-size:12px;color:var(--text3);line-height:1.6">El admin verificará tu DUI en menos de 24h.<br>Mientras tanto podés acumular puntos.</p>
     </div>
   </div>
 </div>
@@ -194,7 +178,7 @@ body::before{content:'';position:fixed;top:-100px;left:50%;transform:translateX(
   <div style="width:100px;height:100px;border-radius:50%;border:2px solid var(--red);display:flex;align-items:center;justify-content:center;font-size:48px;box-shadow:0 0 40px rgba(224,32,32,0.3)">⏳</div>
   <div>
     <div style="font-family:'Bebas Neue';font-size:32px;letter-spacing:1.5px;margin-bottom:8px">¡Registro recibido!</div>
-    <div style="color:var(--text2);font-size:14px;line-height:1.7;max-width:300px;margin:0 auto">Verificaremos tu DUI en menos de 24 horas. Mientras tanto ya podés acumular puntos.</div>
+    <div style="color:var(--text2);font-size:14px;line-height:1.7;max-width:300px;margin:0 auto">El admin verificará tu identidad en menos de 24 horas. Mientras tanto ya podés acumular puntos.</div>
   </div>
   <div style="background:var(--s1);border:1px solid var(--redborder);border-radius:14px;padding:18px 28px;width:100%">
     <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:700">Tiempo restante</div>
@@ -246,7 +230,7 @@ body::before{content:'';position:fixed;top:-100px;left:50%;transform:translateX(
 <div id="s-rewards" class="scr">
   <div class="rw-hdr"><h1>Mis premios 🎁</h1><p id="rw-sub">Canjea tus puntos en cualquier gasolinera</p></div>
   <div class="pts-chip"><span class="lbl">Puntos disponibles</span><span class="val" id="r-pts">0 PTS</span></div>
-  <div class="lock-note" id="lock-note">🔒 Los canjes se habilitan cuando verifiquemos tu DUI.</div>
+  <div class="lock-note" id="lock-note">🔒 Los canjes se habilitan cuando el admin verifique tu cuenta.</div>
   <div class="rw-list" id="rw-list"></div>
 </div>
 
@@ -265,7 +249,6 @@ body::before{content:'';position:fixed;top:-100px;left:50%;transform:translateX(
   </div>
   <div class="menu">
     <div class="mi"><span class="mi-ic">🏆</span><span class="mi-tx">Historial completo</span><span class="mi-ar">›</span></div>
-    <div class="mi"><span class="mi-ic">🆔</span><span class="mi-tx">Mi DUI registrado</span><span class="mi-ar">›</span></div>
     <div class="mi"><span class="mi-ic">❓</span><span class="mi-tx">Ayuda y soporte</span><span class="mi-ar">›</span></div>
   </div>
   <button class="logout" onclick="doLogout()">Cerrar sesión</button>
@@ -291,7 +274,7 @@ body::before{content:'';position:fixed;top:-100px;left:50%;transform:translateX(
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, query, where, getDocs, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 const app = initializeApp({
   apiKey:"AIzaSyAqXjnH6WrXuEQivE3RGwvav1qyFOOyoeY",
@@ -319,7 +302,6 @@ const DEFAULT_REWARDS=[
 ];
 
 let CU=null, cI=null;
-
 const load=(s,t='Cargando...')=>{document.getElementById('loading').classList.toggle('show',s);document.getElementById('loading-txt').textContent=t;}
 const toast=(msg,type='')=>{const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');setTimeout(()=>t.className='toast',3000);}
 const showS=id=>{document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));document.getElementById('s-'+id).classList.add('on');}
@@ -356,34 +338,24 @@ window.doRegister=async()=>{
   const dui=document.getElementById('r-dui').value.trim();
   const phone=document.getElementById('r-phone').value.trim();
   const pass=document.getElementById('r-pass').value;
-  const fi=document.getElementById('dui-file');
   if(!name||!dui||!phone||!pass){toast('Completá todos los campos','err');return;}
   if(dui.length!==9||isNaN(dui)){toast('DUI inválido — 9 dígitos sin guión','err');return;}
-  if(!fi.files||!fi.files[0]){toast('Subí la foto de tu DUI 📷','err');return;}
   load(true,'Creando cuenta...');
   try{
-    const [sp,sd]=await Promise.all([getDocs(query(collection(db,'users'),where('phone','==',phone))),getDocs(query(collection(db,'users'),where('dui','==',dui)))]);
+    const [sp,sd]=await Promise.all([
+      getDocs(query(collection(db,'users'),where('phone','==',phone))),
+      getDocs(query(collection(db,'users'),where('dui','==',dui)))
+    ]);
     if(!sp.empty){toast('Teléfono ya registrado','err');load(false);return;}
     if(!sd.empty){toast('DUI ya registrado','err');load(false);return;}
     const all=await getDocs(query(collection(db,'users'),where('role','==','client')));
     const code='ZN-'+(String(all.size+1).padStart(3,'0'));
-    const reader=new FileReader();
-    reader.onload=async e=>{
-      const nu={name,dui,phone,pass,code,points:0,visits:0,saved:0,role:'client',verified:false,registeredAt:Date.now(),duiPhoto:e.target.result,history:[]};
-      const ref=await addDoc(collection(db,'users'),nu);
-      CU={id:ref.id,...nu};load(false);
-      showS('pending');startC(nu.registeredAt);toast('¡Registro exitoso! Verificando DUI 🎉','ok');
-    };
-    reader.readAsDataURL(fi.files[0]);
+    const nu={name,dui,phone,pass,code,points:0,visits:0,saved:0,role:'client',verified:false,registeredAt:Date.now(),history:[]};
+    const ref=await addDoc(collection(db,'users'),nu);
+    CU={id:ref.id,...nu};load(false);
+    showS('pending');startC(nu.registeredAt);
+    toast('¡Registro exitoso! 🎉','ok');
   }catch(e){toast('Error al registrar. Intentá de nuevo.','err');load(false);}
-}
-
-window.prevDUI=input=>{
-  if(input.files&&input.files[0]){
-    const r=new FileReader();
-    r.onload=e=>{const img=document.getElementById('dui-prev-img');img.src=e.target.result;img.style.display='block';document.getElementById('dui-drop').classList.add('has');};
-    r.readAsDataURL(input.files[0]);
-  }
 }
 
 function startC(reg){
@@ -391,7 +363,8 @@ function startC(reg){
   const upd=()=>{
     const rem=Math.max(0,86400000-(Date.now()-reg));
     const h=Math.floor(rem/3600000),m=Math.floor((rem%3600000)/60000),s=Math.floor((rem%60000)/1000);
-    const cd=document.getElementById('countdown');if(cd)cd.textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    const cd=document.getElementById('countdown');
+    if(cd)cd.textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
     if(rem===0){clearInterval(cI);updateDoc(doc(db,'users',CU.id),{verified:true});CU.verified=true;toast('¡Cuenta verificada! Ya podés canjear 🎉','ok');showNav();goTo('home');}
   };
   upd();cI=setInterval(upd,1000);
@@ -423,7 +396,8 @@ async function rHome(){
     const snap=await getDoc(doc(db,'users',CU.id));
     if(snap.exists())CU={id:CU.id,...snap.data()};
     document.getElementById('hh-name').textContent=CU.name.split(' ')[0];
-    document.getElementById('hh-av').textContent=uI(CU.name);document.getElementById('hh-av').style.background=uC(CU.id);
+    document.getElementById('hh-av').textContent=uI(CU.name);
+    document.getElementById('hh-av').style.background=uC(CU.id);
     document.getElementById('h-pts').textContent=CU.points.toLocaleString();
     document.getElementById('h-eq').textContent='$'+(CU.points*0.02).toFixed(2);
     document.getElementById('pend-ban').style.display=CU.verified?'none':'flex';
@@ -463,9 +437,12 @@ async function rRw(){
 async function rProf(){
   const snap=await getDoc(doc(db,'users',CU.id));
   if(snap.exists())CU={id:CU.id,...snap.data()};
-  document.getElementById('p-av').textContent=uI(CU.name);document.getElementById('p-av').style.background=uC(CU.id);
-  document.getElementById('p-name').textContent=CU.name;document.getElementById('p-dui').textContent='DUI: '+CU.dui;
-  document.getElementById('p-phone').textContent='📱 '+CU.phone;document.getElementById('p-tier').textContent=gT(CU.points).n;
+  document.getElementById('p-av').textContent=uI(CU.name);
+  document.getElementById('p-av').style.background=uC(CU.id);
+  document.getElementById('p-name').textContent=CU.name;
+  document.getElementById('p-dui').textContent='DUI: '+CU.dui;
+  document.getElementById('p-phone').textContent='📱 '+CU.phone;
+  document.getElementById('p-tier').textContent=gT(CU.points).n;
   const pv=document.getElementById('p-verif');pv.className='verif-tag '+(CU.verified?'ok':'pend');pv.textContent=CU.verified?'✅ Verificado':'⏳ Pendiente';
   document.getElementById('ps-pts').textContent=CU.points.toLocaleString();
   document.getElementById('ps-vis').textContent=CU.visits;
