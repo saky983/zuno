@@ -6,25 +6,24 @@
 <title>Zuno – Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0a0a0a;--s1:#111;--s2:#1a1a1a;--s3:#222;--border:#2a2a2a;--red:#e02020;--red2:#ff3333;--red3:#ff6666;--redbg:rgba(224,32,32,0.08);--redborder:rgba(224,32,32,0.25);--green:#22c55e;--greenbg:rgba(34,197,94,0.08);--greenborder:rgba(34,197,94,0.25);--gold:#f5a623;--goldbg:rgba(245,166,35,0.08);--goldborder:rgba(245,166,35,0.25);--purple:#a855f7;--purplebg:rgba(168,85,247,0.08);--purpleborder:rgba(168,85,247,0.25);--text:#f5f5f5;--text2:#a0a0a0;--text3:#555}
+:root{--bg:#0a0a0a;--s1:#111;--s2:#1a1a1a;--s3:#222;--border:#2a2a2a;--red:#e02020;--red2:#ff3333;--red3:#ff6666;--redbg:rgba(224,32,32,0.08);--redborder:rgba(224,32,32,0.25);--green:#22c55e;--greenbg:rgba(34,197,94,0.08);--greenborder:rgba(34,197,94,0.25);--gold:#f5a623;--goldbg:rgba(245,166,35,0.08);--goldborder:rgba(245,166,35,0.25);--purple:#a855f7;--purplebg:rgba(168,85,247,0.08);--purpleborder:rgba(168,85,247,0.25);--blue:#3b82f6;--bluebg:rgba(59,130,246,0.08);--blueborder:rgba(59,130,246,0.25);--text:#f5f5f5;--text2:#a0a0a0;--text3:#555}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;max-width:480px;margin:0 auto;overflow-x:hidden;padding-bottom:40px}
 body::before{content:'';position:fixed;top:-100px;left:50%;transform:translateX(-50%);width:300px;height:300px;background:radial-gradient(circle,rgba(168,85,247,0.08),transparent 70%);pointer-events:none;z-index:0}
 .scr{display:none;flex-direction:column;min-height:100vh;position:relative;z-index:1}
 .scr.on{display:flex;animation:scrIn .3s ease}
 @keyframes scrIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.field{margin-bottom:16px}
-.field label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:8px}
-.field input{width:100%;padding:14px 16px;background:var(--s2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:'Outfit',sans-serif;font-size:15px;outline:none;transition:border-color .2s,box-shadow .2s}
-.field input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(168,85,247,0.1)}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:7px}
+.field input,.field select{width:100%;padding:13px 16px;background:var(--s2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:'Outfit',sans-serif;font-size:15px;outline:none;transition:border-color .2s;-webkit-appearance:none}
+.field input:focus,.field select:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(168,85,247,0.1)}
 .field input::placeholder{color:var(--text3)}
-.btn{display:block;width:100%;padding:15px;border:none;border-radius:10px;font-family:'Bebas Neue';font-size:18px;letter-spacing:1.5px;cursor:pointer;transition:all .2s;margin-top:8px}
+.field select option{background:#1a1a1a}
+.btn{display:block;width:100%;padding:14px;border:none;border-radius:10px;font-family:'Bebas Neue';font-size:18px;letter-spacing:1.5px;cursor:pointer;transition:all .2s;margin-top:8px}
 .btn:active{transform:scale(.98)}
 .btn-purple{background:linear-gradient(135deg,var(--purple),#7c3aed);color:#fff;box-shadow:0 4px 20px rgba(168,85,247,0.35)}
-.btn-purple:hover{box-shadow:0 6px 28px rgba(168,85,247,0.5);transform:translateY(-1px)}
-.btn-green{background:linear-gradient(135deg,var(--green),#16a34a);color:#000}
-.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--text2);margin-top:8px}
-.btn-sm{padding:8px 14px;border-radius:8px;border:none;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Outfit'}
+.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--text2)}
+.btn-sm{padding:7px 12px;border-radius:7px;border:none;font-size:11px;font-weight:700;cursor:pointer;font-family:'Outfit'}
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--s2);border:1px solid var(--border);color:var(--text);padding:12px 20px;border-radius:10px;font-size:14px;font-weight:500;z-index:9998;transition:transform .35s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,.5)}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.ok{border-color:var(--green);color:var(--green)}
@@ -36,73 +35,78 @@ body::before{content:'';position:fixed;top:-100px;left:50%;transform:translateX(
 .loading p{font-size:14px;color:var(--text2)}
 .mov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(14px);z-index:200;align-items:flex-end;justify-content:center}
 .mov.open{display:flex}
-.modal{background:var(--s1);border:1px solid var(--border);border-top:2px solid var(--purple);border-radius:20px 20px 0 0;padding:28px 22px 48px;width:100%;max-width:480px;animation:modalIn .3s ease}
+.modal{background:var(--s1);border:1px solid var(--border);border-top:3px solid var(--purple);border-radius:20px 20px 0 0;padding:24px 20px 44px;width:100%;max-width:480px;animation:modalIn .3s ease;max-height:90vh;overflow-y:auto}
 @keyframes modalIn{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.modal h3{font-family:'Bebas Neue';font-size:24px;letter-spacing:1px;margin-bottom:6px}
-.modal p{color:var(--text2);font-size:14px;margin-bottom:18px;line-height:1.6}
+.modal h3{font-family:'Bebas Neue';font-size:22px;letter-spacing:1px;margin-bottom:5px}
+.modal p{color:var(--text2);font-size:13px;margin-bottom:14px;line-height:1.5}
 /* LOGIN */
 #s-login{justify-content:center;align-items:center;padding:40px 28px;gap:4px;background:linear-gradient(180deg,#0d0315,var(--bg) 50%)}
-.logo-icon{width:80px;height:80px;border-radius:20px;margin:0 auto 16px;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:38px;box-shadow:0 8px 32px rgba(168,85,247,0.45);animation:pp 3s ease-in-out infinite}
+.logo-icon{width:80px;height:80px;border-radius:20px;margin:0 auto 14px;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:38px;box-shadow:0 8px 32px rgba(168,85,247,0.45);animation:pp 3s ease-in-out infinite}
 @keyframes pp{0%,100%{box-shadow:0 8px 32px rgba(168,85,247,.45)}50%{box-shadow:0 8px 48px rgba(168,85,247,.7)}}
-.logo-name{font-family:'Bebas Neue';font-size:42px;letter-spacing:3px;text-align:center}
-.logo-sub{font-size:13px;color:var(--text3);text-align:center;margin-top:4px;margin-bottom:32px}
-.login-box{width:100%;background:var(--s1);border:1px solid var(--border);border-top:2px solid var(--purple);border-radius:16px;padding:24px}
+.logo-name{font-family:'Bebas Neue';font-size:40px;letter-spacing:3px;text-align:center}
+.logo-sub{font-size:12px;color:var(--text3);text-align:center;margin-top:3px;margin-bottom:28px}
+.login-box{width:100%;background:var(--s1);border:1px solid var(--border);border-top:2px solid var(--purple);border-radius:16px;padding:22px}
 /* MAIN */
 #s-main{padding:0 0 20px}
-.topbar{background:linear-gradient(160deg,#0d0315,var(--bg));padding:20px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:relative}
+.topbar{background:linear-gradient(160deg,#0d0315,var(--bg));padding:18px 20px;border-bottom:1px solid var(--border);position:relative}
 .topbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--purple),transparent)}
-.topbar h1{font-family:'Bebas Neue';font-size:22px;letter-spacing:1px;color:var(--purple)}
-.out-btn{padding:8px 14px;background:var(--redbg);border:1px solid var(--redborder);border-radius:8px;color:var(--red3);font-size:12px;font-weight:700;cursor:pointer}
-.alert-ban{margin:14px 22px 0;background:var(--goldbg);border:1px solid var(--goldborder);border-radius:12px;padding:12px 16px;display:none;align-items:center;gap:10px;cursor:pointer;transition:background .2s}
-.alert-ban:hover{background:rgba(245,166,35,.14)}
-.alert-ct{width:24px;height:24px;border-radius:50%;background:var(--gold);color:#000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex-shrink:0}
+.topbar-row{display:flex;align-items:center;justify-content:space-between}
+.topbar h1{font-family:'Bebas Neue';font-size:20px;letter-spacing:1px;color:var(--purple)}
+.topbar .tsub{font-size:11px;color:var(--text3);margin-top:2px}
+.out-btn{padding:7px 13px;background:var(--redbg);border:1px solid var(--redborder);border-radius:8px;color:var(--red3);font-size:12px;font-weight:700;cursor:pointer}
+.role-chip{display:inline-block;padding:3px 12px;border-radius:6px;font-size:11px;font-weight:700;margin-top:5px}
+.chip-super{background:var(--purplebg);border:1px solid var(--purpleborder);color:var(--purple)}
+.chip-station{background:var(--bluebg);border:1px solid var(--blueborder);color:var(--blue)}
+.alert-ban{margin:12px 20px 0;background:var(--goldbg);border:1px solid var(--goldborder);border-radius:12px;padding:11px 14px;display:none;align-items:center;gap:10px;cursor:pointer}
+.alert-ct{width:22px;height:22px;border-radius:50%;background:var(--gold);color:#000;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex-shrink:0}
 .alert-tx{font-size:13px;color:var(--gold);font-weight:600}
-.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px 22px 0}
-.kpi{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:16px;position:relative;overflow:hidden}
-.kpi::after{content:'';position:absolute;top:-30px;right:-30px;width:80px;height:80px;border-radius:50%;opacity:.12}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px 20px 0}
+.kpi{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:14px;position:relative;overflow:hidden}
+.kpi::after{content:'';position:absolute;top:-30px;right:-30px;width:80px;height:80px;border-radius:50%;opacity:.1}
 .k1::after{background:var(--red)}.k2::after{background:var(--green)}.k3::after{background:var(--gold)}.k4::after{background:var(--purple)}
-.kpi-l{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;font-weight:700}
-.kpi-v{font-family:'Bebas Neue';font-size:32px;letter-spacing:1px}
+.kpi-l{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;font-weight:700}
+.kpi-v{font-family:'Bebas Neue';font-size:30px;letter-spacing:1px}
 .k1 .kpi-v{color:var(--red2)}.k2 .kpi-v{color:var(--green)}.k3 .kpi-v{color:var(--gold)}.k4 .kpi-v{color:var(--purple)}
-.admin-tabs{display:flex;gap:8px;padding:16px 22px 0;overflow-x:auto;scrollbar-width:none}
+.admin-tabs{display:flex;gap:6px;padding:14px 20px 0;overflow-x:auto;scrollbar-width:none}
 .admin-tabs::-webkit-scrollbar{display:none}
-.atab{padding:9px 16px;border-radius:100px;border:1.5px solid var(--border);background:var(--s2);color:var(--text3);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
-.atab.on{background:var(--purple);border-color:var(--purple);color:#fff;box-shadow:0 2px 16px rgba(168,85,247,.35)}
-.panel{padding:14px 22px 0;display:none}
+.atab{padding:8px 14px;border-radius:100px;border:1.5px solid var(--border);background:var(--s2);color:var(--text3);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
+.atab.on{background:var(--purple);border-color:var(--purple);color:#fff}
+.panel{padding:12px 20px 0;display:none}
 .panel.on{display:block}
 .rows{display:flex;flex-direction:column;gap:8px}
-.ur{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;align-items:flex-start;gap:12px;animation:scrIn .3s ease}
-.ur-av{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:20px;color:#fff;flex-shrink:0}
+.ur{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:14px;display:flex;align-items:flex-start;gap:11px}
+.ur-av{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:19px;color:#fff;flex-shrink:0}
 .ur-info{flex:1;min-width:0}
 .ur-name{font-weight:700;font-size:14px}
-.ur-detail{font-size:12px;color:var(--text3);margin-top:3px;line-height:1.5}
-.ur-pts{font-size:12px;color:var(--gold);font-weight:600;margin-top:2px}
-.ur-actions{display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0}
-.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700}
+.ur-detail{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.5}
+.ur-pts{font-size:11px;color:var(--gold);font-weight:600;margin-top:2px}
+.ur-actions{display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:6px;font-size:10px;font-weight:700}
 .badge.v{background:var(--greenbg);color:var(--green);border:1px solid var(--greenborder)}
 .badge.p{background:var(--goldbg);color:var(--gold);border:1px solid var(--goldborder)}
-.dui-img-wrap{width:100%;border-radius:12px;overflow:hidden;margin-bottom:16px;background:var(--s2);min-height:150px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border)}
-.dui-img-wrap img{width:100%;border-radius:12px;display:block}
-.dui-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
-.di{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:12px}
-.di-l{font-size:10px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;font-weight:700}
-.di-v{font-weight:700;font-size:14px}
-.approve-row{display:flex;gap:10px}
-.approve-row button{flex:1;padding:14px;border-radius:10px;border:none;font-family:'Bebas Neue';font-size:16px;letter-spacing:1px;cursor:pointer;transition:all .2s}
-.app-btn{background:var(--green);color:#000;box-shadow:0 4px 16px rgba(34,197,94,.3)}
+.dui-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.di{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:11px}
+.di-l{font-size:10px;color:var(--text3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+.di-v{font-weight:700;font-size:13px}
+.approve-row{display:flex;gap:8px}
+.approve-row button{flex:1;padding:13px;border-radius:10px;border:none;font-family:'Bebas Neue';font-size:15px;letter-spacing:1px;cursor:pointer}
+.app-btn{background:var(--green);color:#000}
 .rej-btn{background:var(--redbg);border:1.5px solid var(--redborder)!important;color:var(--red3)}
-.tx-row{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px}
-.tx-ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.tx-info{flex:1}.tx-name{font-weight:600;font-size:14px}.tx-det{font-size:12px;color:var(--text3);margin-top:2px}
-.tx-pts{font-family:'Bebas Neue';font-size:17px;letter-spacing:.5px}
+.tx-row{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:13px 14px;display:flex;align-items:center;gap:11px}
+.tx-ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.tx-info{flex:1}.tx-name{font-weight:600;font-size:13px}.tx-det{font-size:11px;color:var(--text3);margin-top:2px}
+.tx-pts{font-family:'Bebas Neue';font-size:16px}
 .earn{color:var(--red2)}.spend{color:var(--green)}
-.stn-row,.rw-row{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px}
-.stn-info,.rw-info{flex:1}
-.stn-name,.rw-name{font-weight:700;font-size:14px}
-.stn-addr,.rw-desc{font-size:12px;color:var(--text3);margin-top:2px}
-.stn-multi{font-family:'Bebas Neue';font-size:16px;color:var(--gold)}
-.rw-cost{font-size:12px;color:var(--gold);font-weight:700;margin-top:3px}
-.empty{text-align:center;color:var(--text3);padding:40px;font-size:14px;line-height:1.7}
+.item-row{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:13px 14px;display:flex;align-items:center;gap:11px}
+.item-info{flex:1}.item-name{font-weight:700;font-size:14px}.item-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.item-val{font-family:'Bebas Neue';font-size:16px;color:var(--gold)}
+.empty{text-align:center;color:var(--text3);padding:36px;font-size:13px;line-height:1.7}
+.info-box{border-radius:12px;padding:12px 14px;font-size:12px;line-height:1.7;margin-bottom:12px}
+.info-gold{background:var(--goldbg);border:1px solid var(--goldborder);color:var(--gold)}
+.info-purple{background:var(--purplebg);border:1px solid var(--purpleborder);color:var(--purple)}
+.pts-rule{background:var(--s1);border:1px solid var(--redborder);border-radius:14px;padding:18px;text-align:center;margin-bottom:14px}
+.pts-rule .big{font-family:'Bebas Neue';font-size:48px;color:var(--red2);line-height:1}
+.pts-rule .sub{font-size:13px;color:var(--text2);margin-top:4px}
 </style>
 </head>
 <body>
@@ -112,61 +116,79 @@ body::before{content:'';position:fixed;top:-100px;left:50%;transform:translateX(
   <div class="logo-name">ZUNO</div>
   <div class="logo-sub">Panel de Administración 🇸🇻</div>
   <div class="login-box">
-    <div class="field"><label>Usuario</label><input type="text" id="l-u" placeholder="admin" value="admin"></div>
-    <div class="field"><label>Contraseña</label><input type="password" id="l-p" placeholder="••••••" value="admin"></div>
+    <div class="field"><label>Usuario</label><input type="text" id="l-u" placeholder="admin"></div>
+    <div class="field"><label>Contraseña</label><input type="password" id="l-p" placeholder="••••••"></div>
     <button class="btn btn-purple" onclick="doLogin()">Entrar al panel →</button>
   </div>
 </div>
 
 <div id="s-main" class="scr">
   <div class="topbar">
-    <div><h1>⚙️ Admin · Zuno</h1></div>
-    <button class="out-btn" onclick="doLogout()">Salir 🚪</button>
+    <div class="topbar-row">
+      <div><h1>⚙️ Zuno Admin</h1><div class="tsub" id="top-sub">—</div></div>
+      <button class="out-btn" onclick="doLogout()">Salir 🚪</button>
+    </div>
+    <span class="role-chip" id="role-chip">—</span>
   </div>
-  <div class="alert-ban" id="alert-ban" onclick="setTab('verificaciones')">
+  <div class="alert-ban" id="alert-ban" onclick="gotoVerif()">
     <div class="alert-ct" id="alert-n">0</div>
-    <div class="alert-tx" id="alert-tx">usuarios pendientes de verificación</div>
+    <div class="alert-tx" id="alert-tx">pendientes de verificación</div>
   </div>
   <div class="kpi-grid">
-    <div class="kpi k1"><div class="kpi-l">Usuarios activos</div><div class="kpi-v" id="k1">—</div></div>
+    <div class="kpi k1"><div class="kpi-l">Clientes</div><div class="kpi-v" id="k1">—</div></div>
     <div class="kpi k2"><div class="kpi-l">Puntos emitidos</div><div class="kpi-v" id="k2">—</div></div>
-    <div class="kpi k3"><div class="kpi-l">Visitas totales</div><div class="kpi-v" id="k3">—</div></div>
-    <div class="kpi k4"><div class="kpi-l">Canjes totales</div><div class="kpi-v" id="k4">—</div></div>
+    <div class="kpi k3"><div class="kpi-l">Visitas</div><div class="kpi-v" id="k3">—</div></div>
+    <div class="kpi k4"><div class="kpi-l">Canjes</div><div class="kpi-v" id="k4">—</div></div>
   </div>
-  <div class="admin-tabs">
-    <div class="atab on" onclick="setTab('usuarios')">👥 Usuarios</div>
-    <div class="atab" onclick="setTab('verificaciones')">🆔 Verificaciones</div>
-    <div class="atab" onclick="setTab('transacciones')">📊 Transacciones</div>
-    <div class="atab" onclick="setTab('cajeros')">🏪 Cajeros</div>
-    <div class="atab" onclick="setTab('gasolineras')">⛽ Gasolineras</div>
-    <div class="atab" onclick="setTab('premios')">🎁 Premios</div>
-  </div>
-  <div class="panel on" id="p-usuarios"><div class="rows" id="r-usuarios"><div class="empty">Cargando...</div></div></div>
+  <div class="admin-tabs" id="tabs-row"></div>
+  <div class="panel on" id="p-clientes"><div class="rows" id="r-clientes"><div class="empty">Cargando...</div></div></div>
   <div class="panel" id="p-verificaciones"><div class="rows" id="r-verif"><div class="empty">Cargando...</div></div></div>
   <div class="panel" id="p-transacciones"><div class="rows" id="r-tx"><div class="empty">Cargando...</div></div></div>
-  <div class="panel" id="p-cajeros">
-    <div style="background:var(--goldbg);border:1px solid var(--goldborder);border-radius:12px;padding:14px 16px;margin-bottom:14px;font-size:13px;color:var(--gold);line-height:1.7">⚠️ Usuario de prueba: <strong>cajero1</strong> / <strong>caja</strong></div>
-    <div class="rows" id="r-cajeros"><div class="empty">Cargando...</div></div>
-    <button class="btn btn-ghost" style="margin-top:14px" onclick="oCajero()">+ Crear cajero</button>
-  </div>
-  <div class="panel" id="p-gasolineras">
+  <div class="panel" id="p-estaciones">
     <div class="rows" id="r-stn"></div>
-    <button class="btn btn-ghost" style="margin-top:14px" onclick="addStn()">+ Agregar gasolinera</button>
+    <button class="btn btn-ghost" style="margin-top:12px" onclick="oStn(null)">+ Agregar estación</button>
+  </div>
+  <div class="panel" id="p-admins">
+    <div class="info-box info-purple">🔐 Los admins de estación solo gestionan su propia estación y sus cajeros.</div>
+    <div class="rows" id="r-admins"><div class="empty">Cargando...</div></div>
+    <button class="btn btn-ghost" style="margin-top:12px" onclick="oAdmin()">+ Crear admin de estación</button>
+  </div>
+  <div class="panel" id="p-cajeros">
+    <div class="info-box info-gold">⚠️ Usuario de prueba siempre activo: <strong>cajero1 / caja</strong></div>
+    <div class="rows" id="r-cajeros"><div class="empty">Cargando...</div></div>
+    <button class="btn btn-ghost" style="margin-top:12px" onclick="oCajero()">+ Crear cajero</button>
+  </div>
+  <div class="panel" id="p-empleados">
+    <div class="info-box info-purple">🔐 Los PINes identifican al empleado de pista que procesa cada canje. El cajero debe ingresarlo antes de redimir cualquier premio.</div>
+    <div class="rows" id="r-empleados"><div class="empty">Cargando...</div></div>
+    <button class="btn btn-ghost" style="margin-top:12px" onclick="oEmpleado()">+ Agregar PIN de empleado</button>
   </div>
   <div class="panel" id="p-premios">
+    <div class="pts-rule"><div class="big">1 PT = $1</div><div class="sub">1 punto por cada dólar consumido</div></div>
     <div class="rows" id="r-rw"></div>
-    <button class="btn btn-ghost" style="margin-top:14px" onclick="addRw()">+ Agregar premio</button>
+    <button class="btn btn-ghost" style="margin-top:12px" onclick="oRwNew()">+ Agregar premio</button>
+  </div>
+</div>
+
+<!-- MODAL EMPLEADO PIN -->
+<div class="mov" id="m-empleado">
+  <div class="modal">
+    <h3 id="m-emp-t">🔐 PIN de Empleado</h3>
+    <p>El empleado usará este PIN en el panel del cajero para autorizar canjes.</p>
+    <div class="field"><label>Nombre del empleado</label><input type="text" id="m-emp-name" placeholder="Ej: Juan Pérez"></div>
+    <div class="field"><label>PIN de 4 dígitos</label><input type="text" id="m-emp-pin" placeholder="Ej: 3592" maxlength="4" inputmode="numeric"></div>
+    <div class="field"><label>Estación asignada</label><select id="m-emp-stn"></select></div>
+    <button class="btn btn-purple" onclick="confEmpleado()">Guardar →</button>
+    <button class="btn btn-ghost" onclick="closeM('m-empleado')">Cancelar</button>
   </div>
 </div>
 
 <!-- MODAL DUI -->
 <div class="mov" id="m-dui">
   <div class="modal">
-    <h3>🆔 Verificación de DUI</h3>
+    <h3>🆔 Verificar cliente</h3>
     <p id="m-dui-sub">—</p>
-    <div class="dui-img-wrap">
-      <img id="dui-img" src="" alt="Foto DUI" onerror="this.parentElement.innerHTML='<div style=padding:32px;color:var(--text3);font-size:13px;text-align:center>📷 No se pudo cargar la foto</div>'">
-    </div>
+    <div class="info-box info-gold" id="dui-manual">📋 Sin foto — verificar el DUI físicamente en persona antes de aprobar.</div>
     <div class="dui-grid">
       <div class="di"><div class="di-l">Nombre</div><div class="di-v" id="di-name">—</div></div>
       <div class="di"><div class="di-l">DUI</div><div class="di-v" id="di-dui">—</div></div>
@@ -177,7 +199,7 @@ body::before{content:'';position:fixed;top:-100px;left:50%;transform:translateX(
       <button class="app-btn" onclick="approve()">✓ Aprobar</button>
       <button class="rej-btn" onclick="reject()">✗ Rechazar</button>
     </div>
-    <button class="btn btn-ghost" style="margin-top:10px" onclick="closeM('m-dui')">Cancelar</button>
+    <button class="btn btn-ghost" style="margin-top:8px" onclick="closeM('m-dui')">Cancelar</button>
   </div>
 </div>
 
@@ -186,9 +208,9 @@ body::before{content:'';position:fixed;top:-100px;left:50%;transform:translateX(
   <div class="modal">
     <h3>± Ajuste de puntos</h3>
     <p id="m-pts-sub">—</p>
-    <div class="field"><label>Puntos (negativo para restar)</label><input type="number" id="m-pts-v" placeholder="Ej: 100 o -50"></div>
+    <div class="field"><label>Puntos (negativo para restar)</label><input type="number" id="m-pts-v" placeholder="Ej: 50 o -20"></div>
     <div class="field"><label>Motivo</label><input type="text" id="m-pts-n" placeholder="Ej: Promoción especial"></div>
-    <button class="btn btn-purple" onclick="confPts()">Aplicar cambio →</button>
+    <button class="btn btn-purple" onclick="confPts()">Aplicar →</button>
     <button class="btn btn-ghost" onclick="closeM('m-pts')">Cancelar</button>
   </div>
 </div>
@@ -196,11 +218,54 @@ body::before{content:'';position:fixed;top:-100px;left:50%;transform:translateX(
 <!-- MODAL PREMIO -->
 <div class="mov" id="m-rw">
   <div class="modal">
-    <h3 id="m-rw-t">🎁 Editar premio</h3>
-    <p id="m-rw-sub">—</p>
-    <div class="field"><label>Costo en puntos</label><input type="number" id="m-rw-v" placeholder="Ej: 100"></div>
-    <button class="btn btn-purple" onclick="confRw()">Guardar cambio →</button>
+    <h3 id="m-rw-t">🎁 Premio</h3>
+    <div class="field"><label>Nombre</label><input type="text" id="m-rw-name" placeholder="Ej: Lavado de auto"></div>
+    <div class="field"><label>Descripción</label><input type="text" id="m-rw-desc" placeholder="Ej: Lavado básico gratis"></div>
+    <div class="field"><label>Emoji</label><input type="text" id="m-rw-icon" placeholder="🎁" maxlength="4"></div>
+    <div class="field"><label>Costo en puntos</label><input type="number" id="m-rw-cost" placeholder="Ej: 100"></div>
+    <button class="btn btn-purple" onclick="confRw()">Guardar →</button>
     <button class="btn btn-ghost" onclick="closeM('m-rw')">Cancelar</button>
+  </div>
+</div>
+
+<!-- MODAL ESTACION -->
+<div class="mov" id="m-stn">
+  <div class="modal">
+    <h3 id="m-stn-t">⛽ Estación</h3>
+    <div class="field"><label>Nombre</label><input type="text" id="m-stn-name" placeholder="Ej: Zuno – Santa Tecla"></div>
+    <div class="field"><label>Dirección</label><input type="text" id="m-stn-addr" placeholder="Ej: Blvd. Merliot, La Libertad"></div>
+    <div class="field"><label>Multiplicador de puntos</label><input type="number" id="m-stn-multi" placeholder="1" step="0.5" min="1" value="1"></div>
+    <p style="font-size:12px;color:var(--text3);margin-top:-8px;margin-bottom:14px">1 = normal (1pt por $1) · 1.5 = 50% extra · 2 = doble puntos</p>
+    <button class="btn btn-purple" onclick="confStn()">Guardar →</button>
+    <button class="btn btn-ghost" onclick="closeM('m-stn')">Cancelar</button>
+  </div>
+</div>
+
+<!-- MODAL ADMIN ESTACION -->
+<div class="mov" id="m-admin">
+  <div class="modal">
+    <h3>👤 Admin de Estación</h3>
+    <p>Puede gestionar clientes, cajeros y premios de su estación asignada.</p>
+    <div class="field"><label>Nombre completo</label><input type="text" id="m-adm-name" placeholder="Ej: Carlos Ramírez"></div>
+    <div class="field"><label>Usuario</label><input type="text" id="m-adm-user" placeholder="Ej: admin_tecla"></div>
+    <div class="field"><label>Contraseña</label><input type="password" id="m-adm-pass" placeholder="Mínimo 6 caracteres"></div>
+    <div class="field"><label>Estación asignada</label><select id="m-adm-stn"></select></div>
+    <button class="btn btn-purple" onclick="confAdmin()">Crear admin →</button>
+    <button class="btn btn-ghost" onclick="closeM('m-admin')">Cancelar</button>
+  </div>
+</div>
+
+<!-- MODAL CAJERO -->
+<div class="mov" id="m-cajero">
+  <div class="modal">
+    <h3>🏪 Nuevo Cajero</h3>
+    <div class="field"><label>Nombre</label><input type="text" id="m-caj-name" placeholder="Ej: María González"></div>
+    <div class="field"><label>Usuario</label><input type="text" id="m-caj-user" placeholder="Ej: cajero_tecla1"></div>
+    <div class="field"><label>Contraseña</label><input type="password" id="m-caj-pass" placeholder="Mínimo 6 caracteres"></div>
+    <div class="field"><label>Correo (para cierre de turno)</label><input type="email" id="m-caj-email" placeholder="cajero@ejemplo.com"></div>
+    <div class="field"><label>Estación asignada</label><select id="m-caj-stn"></select></div>
+    <button class="btn btn-purple" onclick="confCajero()">Crear cajero →</button>
+    <button class="btn btn-ghost" onclick="closeM('m-cajero')">Cancelar</button>
   </div>
 </div>
 
@@ -223,74 +288,117 @@ const db = getFirestore(app);
 
 const COLS=['#e02020','#22c55e','#3b82f6','#f59e0b','#a855f7'];
 const uC=id=>COLS[Math.abs([...id].reduce((a,c)=>a+c.charCodeAt(0),0))%COLS.length];
-const uI=n=>n.charAt(0).toUpperCase();
+const uI=n=>(n||'?').charAt(0).toUpperCase();
 const fD=ts=>ts?new Date(ts).toLocaleDateString('es-SV'):'—';
 const fDN=()=>new Date().toLocaleDateString('es-SV');
+const load=(s,t='Cargando...')=>{document.getElementById('loading').classList.toggle('show',s);document.getElementById('load-txt').textContent=t;};
+const toast=(msg,type='')=>{const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');setTimeout(()=>t.className='toast',3000);};
+window.closeM=id=>document.getElementById(id).classList.remove('open');
+document.querySelectorAll('.mov').forEach(ov=>ov.addEventListener('click',e=>{if(e.target===ov)ov.classList.remove('open')}));
 
 const DEFAULT_REWARDS=[
   {id:'r1',name:'$1 de descuento',desc:'En próxima carga de combustible',cost:50,icon:'💵'},
   {id:'r2',name:'Lavado de auto',desc:'Lavado básico gratis',cost:200,icon:'🚗'},
   {id:'r3',name:'$3 en tienda',desc:'Válido en tienda de conveniencia',cost:150,icon:'🏪'},
-  {id:'r4',name:'$5 en combustible',desc:'Descuento directo en próxima carga',cost:250,icon:'⛽'},
+  {id:'r4',name:'$5 en combustible',desc:'Descuento en próxima carga',cost:250,icon:'⛽'},
   {id:'r5',name:'Tanque lleno 10% off',desc:'10% de descuento en carga completa',cost:500,icon:'🏆'},
 ];
-
 const DEFAULT_STATIONS=[
   {id:'s1',name:'Zuno – San Salvador Centro',addr:'Av. España, San Salvador',multiplier:1},
-  {id:'s2',name:'Zuno – Santa Tecla',addr:'Blvd. Merliot, La Libertad',multiplier:1.5},
+  {id:'s2',name:'Zuno – Santa Tecla',addr:'Blvd. Merliot, La Libertad',multiplier:1},
   {id:'s3',name:'Zuno – Soyapango',addr:'Calle Antigua, Soyapango',multiplier:1},
-  {id:'s4',name:'Zuno – San Miguel',addr:'Carretera Panamericana, San Miguel',multiplier:1},
+  {id:'s4',name:'Zuno – San Miguel',addr:'Carretera Panamericana',multiplier:1},
 ];
 
-let eUID=null, eRID=null, vUID=null, vUDOC=null;
+let CU=null, vUID=null, vUDOC=null, eUID=null, eRID=null, eSID=null, editRw=false;
 
-const load=(s,t='Cargando...')=>{document.getElementById('loading').classList.toggle('show',s);document.getElementById('load-txt').textContent=t;}
-const toast=(msg,type='')=>{const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');setTimeout(()=>t.className='toast',3000);}
-window.closeM=id=>document.getElementById(id).classList.remove('open');
-document.querySelectorAll('.mov').forEach(ov=>ov.addEventListener('click',e=>{if(e.target===ov)ov.classList.remove('open')}));
+const getCfg=async(k,def)=>{try{const s=await getDoc(doc(db,'config',k));return s.exists()?s.data().list:def;}catch{return def;}};
+const getRewards=()=>getCfg('rewards',DEFAULT_REWARDS);
+const getStations=()=>getCfg('stations',DEFAULT_STATIONS);
+const getCajeros=()=>getCfg('cajeros',[]);
+const getAdmins=()=>getCfg('admins',[]);
 
+async function initConfig(){
+  const r=await getDoc(doc(db,'config','rewards'));
+  if(!r.exists()) await setDoc(doc(db,'config','rewards'),{list:DEFAULT_REWARDS});
+  const s=await getDoc(doc(db,'config','stations'));
+  if(!s.exists()) await setDoc(doc(db,'config','stations'),{list:DEFAULT_STATIONS});
+}
+
+// ─── LOGIN ────────────────────────────────────────────
 window.doLogin=async()=>{
-  if(document.getElementById('l-u').value==='admin'&&document.getElementById('l-p').value==='admin'){
-    load(true,'Iniciando sesión...');
-    await initConfig();
-    await renderAll();
-    load(false);
-    document.getElementById('s-login').classList.remove('on');
-    document.getElementById('s-main').classList.add('on');
-  } else { toast('Credenciales incorrectas ❌','err'); }
+  const u=document.getElementById('l-u').value.trim();
+  const p=document.getElementById('l-p').value;
+  if(!u||!p){toast('Completá los campos','err');return;}
+  load(true,'Verificando...');
+  try{
+    if(u==='admin'&&p==='admin'){
+      CU={role:'super',name:'Super Admin',user:'admin'};
+      await initConfig();
+      buildTabs('super');
+      await renderAll();
+      load(false);
+      openMain('Super Admin · Acceso total','🔴 Super Admin','chip-super');
+      return;
+    }
+    const admins=await getAdmins();
+    const found=admins.find(a=>a.user===u&&a.pass===p);
+    if(found){
+      CU={role:'station',...found};
+      buildTabs('station');
+      await renderAll();
+      load(false);
+      const stns=await getStations();
+      const stn=stns.find(s=>s.id===CU.stationId)||{name:'Mi Estación'};
+      openMain(found.name+' · '+stn.name,'🔵 Admin Estación','chip-station');
+      return;
+    }
+    toast('Credenciales incorrectas ❌','err');load(false);
+  }catch(e){toast('Error de conexión','err');load(false);}
+}
+
+function openMain(sub,chip,chipClass){
+  document.getElementById('s-login').classList.remove('on');
+  document.getElementById('s-main').classList.add('on');
+  document.getElementById('top-sub').textContent=sub;
+  const rc=document.getElementById('role-chip');rc.textContent=chip;rc.className='role-chip '+chipClass;
 }
 
 window.doLogout=()=>{
+  CU=null;
   document.getElementById('s-main').classList.remove('on');
   document.getElementById('s-login').classList.add('on');
+  document.getElementById('l-u').value='';
+  document.getElementById('l-p').value='';
 }
 
-async function initConfig(){
-  // Init rewards if not exist
-  const rSnap=await getDoc(doc(db,'config','rewards'));
-  if(!rSnap.exists()) await setDoc(doc(db,'config','rewards'),{list:DEFAULT_REWARDS});
-  // Init stations if not exist
-  const sSnap=await getDoc(doc(db,'config','stations'));
-  if(!sSnap.exists()) await setDoc(doc(db,'config','stations'),{list:DEFAULT_STATIONS});
+function buildTabs(role){
+  const superT=[
+    {id:'clientes',l:'👥 Clientes'},{id:'verificaciones',l:'🆔 Verificar'},
+    {id:'transacciones',l:'📊 Transacciones'},{id:'estaciones',l:'⛽ Estaciones'},
+    {id:'admins',l:'👤 Admins'},{id:'cajeros',l:'🏪 Cajeros'},
+    {id:'empleados',l:'🔐 PINes'},{id:'premios',l:'🎁 Premios'},
+  ];
+  const stationT=[
+    {id:'clientes',l:'👥 Clientes'},{id:'verificaciones',l:'🆔 Verificar'},
+    {id:'transacciones',l:'📊 Transacciones'},{id:'cajeros',l:'🏪 Cajeros'},
+    {id:'empleados',l:'🔐 PINes'},{id:'premios',l:'🎁 Premios'},
+  ];
+  const tabs=role==='super'?superT:stationT;
+  document.getElementById('tabs-row').innerHTML=tabs.map((t,i)=>`<div class="atab ${i===0?'on':''}" onclick="setTab('${t.id}',this)">${t.l}</div>`).join('');
 }
 
-async function getRewards(){
-  const s=await getDoc(doc(db,'config','rewards'));
-  return s.exists()?s.data().list:DEFAULT_REWARDS;
-}
-async function getStations(){
-  const s=await getDoc(doc(db,'config','stations'));
-  return s.exists()?s.data().list:DEFAULT_STATIONS;
-}
-
-window.setTab=async tab=>{
-  const names=['usuarios','verificaciones','transacciones','cajeros','gasolineras','premios'];
-  document.querySelectorAll('.atab').forEach((t,i)=>t.classList.toggle('on',names[i]===tab));
+window.setTab=async(tab,el)=>{
+  document.querySelectorAll('.atab').forEach(t=>t.classList.remove('on'));
+  if(el)el.classList.add('on');
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
-  document.getElementById('p-'+tab).classList.add('on');
-  load(true);
-  await renderAll();
-  load(false);
+  const panel=document.getElementById('p-'+tab);
+  if(panel)panel.classList.add('on');
+  load(true);await renderAll();load(false);
+}
+
+window.gotoVerif=()=>{
+  document.querySelectorAll('.atab').forEach(t=>{if(t.textContent.includes('Verificar'))t.click();});
 }
 
 async function renderAll(){
@@ -298,315 +406,325 @@ async function renderAll(){
     const snap=await getDocs(query(collection(db,'users'),where('role','==','client')));
     const users=snap.docs.map(d=>({id:d.id,...d.data()}));
     const pend=users.filter(u=>!u.verified);
-    const totalPts=users.reduce((s,u)=>s+u.points,0);
-    const totalVis=users.reduce((s,u)=>s+u.visits,0);
-
-    // KPIs
     document.getElementById('k1').textContent=users.length;
-    document.getElementById('k2').textContent=totalPts.toLocaleString();
-    document.getElementById('k3').textContent=totalVis;
-
-    // Count redeems from transactions
-    try{
-      const txSnap=await getDocs(query(collection(db,'transactions'),where('type','==','redeem')));
-      document.getElementById('k4').textContent=txSnap.size;
-    }catch{document.getElementById('k4').textContent='0';}
-
-    // Alert
+    document.getElementById('k2').textContent=users.reduce((s,u)=>s+(u.points||0),0).toLocaleString();
+    document.getElementById('k3').textContent=users.reduce((s,u)=>s+(u.visits||0),0);
+    try{const tx=await getDocs(query(collection(db,'transactions'),where('type','==','redeem')));document.getElementById('k4').textContent=tx.size;}catch{document.getElementById('k4').textContent='0';}
     const ab=document.getElementById('alert-ban');
-    if(pend.length){
-      ab.style.display='flex';
-      document.getElementById('alert-n').textContent=pend.length;
-      document.getElementById('alert-tx').textContent='usuario'+(pend.length>1?'s':'')+' pendiente'+(pend.length>1?'s':'')+' de verificación';
-    } else { ab.style.display='none'; }
-
-    rUsers(users);
-    rVerif(pend);
-    await rTx();
-    await rCajeros();
-    await rStn();
-    await rRw();
+    if(pend.length){ab.style.display='flex';document.getElementById('alert-n').textContent=pend.length;document.getElementById('alert-tx').textContent='cliente'+(pend.length>1?'s':'')+' pendiente'+(pend.length>1?'s':'')+' de verificación';}
+    else ab.style.display='none';
+    rClientes(users);rVerif(pend);
+    await rTx();await rStn();await rAdmins();await rCajeros();await rEmpleados();await rRw();
   }catch(e){console.error(e);}
 }
 
-function rUsers(users){
-  if(!users.length){document.getElementById('r-usuarios').innerHTML='<div class="empty">Sin usuarios registrados aún</div>';return;}
-  document.getElementById('r-usuarios').innerHTML=users.map(u=>`
+// CLIENTES
+function rClientes(users){
+  const el=document.getElementById('r-clientes');
+  if(!users.length){el.innerHTML='<div class="empty">Sin clientes registrados aún</div>';return;}
+  el.innerHTML=users.map(u=>`
     <div class="ur">
       <div class="ur-av" style="background:${uC(u.id)}">${uI(u.name)}</div>
       <div class="ur-info">
         <div class="ur-name">${u.name}</div>
         <div class="ur-detail">📱 ${u.phone} · 🆔 ${u.dui} · ${u.code}</div>
-        <div class="ur-pts">⭐ ${u.points.toLocaleString()} pts · ${u.visits} visitas · ${fD(u.registeredAt)}</div>
+        <div class="ur-pts">⭐ ${(u.points||0).toLocaleString()} pts · ${u.visits||0} visitas · ${fD(u.registeredAt)}</div>
       </div>
       <div class="ur-actions">
-        <span class="badge ${u.verified?'v':'p'}">${u.verified?'✅ Activo':'⏳ Pendiente'}</span>
-        <button class="btn-sm" style="background:var(--goldbg);border:1px solid var(--goldborder);color:var(--gold)" onclick="oPts('${u.id}','${u.name}',${u.points})">± Pts</button>
-        ${!u.verified?`<button class="btn-sm" style="background:var(--purplebg);border:1px solid var(--purpleborder);color:var(--purple)" onclick="oDUI('${u.id}')">Ver DUI</button>`:''}
+        <span class="badge ${u.verified?'v':'p'}">${u.verified?'✅':'⏳'}</span>
+        <button class="btn-sm" style="background:var(--goldbg);border:1px solid var(--goldborder);color:var(--gold)" onclick="oPts('${u.id}','${u.name}',${u.points||0})">± Pts</button>
+        ${!u.verified?`<button class="btn-sm" style="background:var(--purplebg);border:1px solid var(--purpleborder);color:var(--purple)" onclick="oDUI('${u.id}')">Verificar</button>`:''}
       </div>
     </div>`).join('');
 }
 
+// VERIFICACIONES
 function rVerif(pend){
-  if(!pend.length){document.getElementById('r-verif').innerHTML='<div class="empty">✅ Sin verificaciones pendientes<br>Todos los usuarios están activos</div>';return;}
-  document.getElementById('r-verif').innerHTML=pend.map(u=>`
+  const el=document.getElementById('r-verif');
+  if(!pend.length){el.innerHTML='<div class="empty">✅ Sin verificaciones pendientes</div>';return;}
+  el.innerHTML=pend.map(u=>`
     <div class="ur">
       <div class="ur-av" style="background:${uC(u.id)}">${uI(u.name)}</div>
-      <div class="ur-info">
-        <div class="ur-name">${u.name}</div>
-        <div class="ur-detail">📱 ${u.phone} · 🆔 DUI: ${u.dui}</div>
-        <div class="ur-pts">Registrado: ${fD(u.registeredAt)}</div>
-      </div>
-      <div class="ur-actions">
-        <button class="btn-sm" style="background:var(--purplebg);border:1px solid var(--purpleborder);color:var(--purple)" onclick="oDUI('${u.id}')">Revisar →</button>
-      </div>
+      <div class="ur-info"><div class="ur-name">${u.name}</div><div class="ur-detail">📱 ${u.phone} · 🆔 ${u.dui}</div><div class="ur-pts">${fD(u.registeredAt)}</div></div>
+      <div class="ur-actions"><button class="btn-sm" style="background:var(--purplebg);border:1px solid var(--purpleborder);color:var(--purple)" onclick="oDUI('${u.id}')">Revisar →</button></div>
     </div>`).join('');
 }
 
-async function rTx(){
-  try{
-    const snap=await getDocs(query(collection(db,'transactions'),orderBy('ts','desc'),limit(40)));
-    if(snap.empty){document.getElementById('r-tx').innerHTML='<div class="empty">Sin transacciones aún</div>';return;}
-    document.getElementById('r-tx').innerHTML=snap.docs.map(d=>{
-      const t=d.data();
-      return `<div class="tx-row">
-        <div class="tx-ic" style="background:${t.type==='earn'?'rgba(224,32,32,.1)':'rgba(34,197,94,.1)'}">${t.type==='earn'?'⛽':'🎁'}</div>
-        <div class="tx-info"><div class="tx-name">${t.user}</div><div class="tx-det">${t.station||t.reward||'—'} · ${t.date}</div></div>
-        <div class="tx-pts ${t.type==='earn'?'earn':'spend'}">${t.type==='earn'?'+':'-'}${t.pts} pts</div>
-      </div>`;
-    }).join('');
-  }catch(e){document.getElementById('r-tx').innerHTML='<div class="empty">Error al cargar transacciones</div>';}
-}
-
-async function rStn(){
-  const stations=await getStations();
-  document.getElementById('r-stn').innerHTML=stations.map(s=>`
-    <div class="stn-row">
-      <div style="font-size:24px">⛽</div>
-      <div class="stn-info">
-        <div class="stn-name">${s.name}</div>
-        <div class="stn-addr">📍 ${s.addr}</div>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
-        <div class="stn-multi">${s.multiplier>1?'★ '+s.multiplier+'× pts':'1 pt / $1'}</div>
-        <button class="btn-sm" style="background:var(--goldbg);border:1px solid var(--goldborder);color:var(--gold)" onclick="eStn('${s.id}')">Editar</button>
-      </div>
-    </div>`).join('');
-}
-
-async function rRw(){
-  const rewards=await getRewards();
-  document.getElementById('r-rw').innerHTML=rewards.map(r=>`
-    <div class="rw-row">
-      <div style="font-size:26px">${r.icon}</div>
-      <div class="rw-info">
-        <div class="rw-name">${r.name}</div>
-        <div class="rw-desc">${r.desc}</div>
-        <div class="rw-cost">⭐ ${r.cost} pts</div>
-      </div>
-      <button class="btn-sm" style="background:var(--goldbg);border:1px solid var(--goldborder);color:var(--gold)" onclick="oRw('${r.id}')">Editar</button>
-    </div>`).join('');
-}
-
-// DUI
 window.oDUI=async id=>{
   load(true);
-  const snap=await getDoc(doc(db,'users',id));
-  if(!snap.exists()){load(false);return;}
-  vUID=id; vUDOC={id,...snap.data()};
-  document.getElementById('m-dui-sub').textContent='Revisá el DUI de '+vUDOC.name+' y decidí si aprobar su cuenta.';
-  document.getElementById('di-name').textContent=vUDOC.name;
-  document.getElementById('di-dui').textContent=vUDOC.dui;
-  document.getElementById('di-phone').textContent=vUDOC.phone;
-  document.getElementById('di-date').textContent=fD(vUDOC.registeredAt);
-  const img=document.getElementById('dui-img');
-  if(vUDOC.duiPhoto){img.src=vUDOC.duiPhoto;img.style.display='block';}
-  else{img.onerror();}
-  load(false);
-  document.getElementById('m-dui').classList.add('open');
+  try{const snap=await getDoc(doc(db,'users',id));if(!snap.exists()){load(false);return;}
+    vUID=id;vUDOC={id,...snap.data()};
+    document.getElementById('m-dui-sub').textContent='Cliente: '+vUDOC.name;
+    document.getElementById('di-name').textContent=vUDOC.name;
+    document.getElementById('di-dui').textContent=vUDOC.dui;
+    document.getElementById('di-phone').textContent=vUDOC.phone;
+    document.getElementById('di-date').textContent=fD(vUDOC.registeredAt);
+    load(false);document.getElementById('m-dui').classList.add('open');
+  }catch(e){load(false);}
 }
-
 window.approve=async()=>{
-  if(!vUID)return;
-  load(true,'Aprobando...');
-  try{
-    await updateDoc(doc(db,'users',vUID),{verified:true});
-    closeM('m-dui');toast('✅ '+vUDOC.name+' aprobado','ok');
-    await renderAll();load(false);
-  }catch(e){toast('Error al aprobar','err');load(false);}
+  if(!vUID)return;load(true,'Aprobando...');
+  try{await updateDoc(doc(db,'users',vUID),{verified:true});closeM('m-dui');toast('✅ '+vUDOC.name+' aprobado','ok');await renderAll();load(false);}
+  catch(e){toast('Error','err');load(false);}
 }
-
 window.reject=async()=>{
-  if(!vUID)return;
-  if(!confirm('¿Seguro que querés rechazar y eliminar a '+vUDOC.name+'?'))return;
-  load(true,'Rechazando...');
-  try{
-    await deleteDoc(doc(db,'users',vUID));
-    closeM('m-dui');toast('❌ '+vUDOC.name+' rechazado','err');
-    await renderAll();load(false);
-  }catch(e){toast('Error al rechazar','err');load(false);}
+  if(!vUID)return;if(!confirm('¿Rechazar y eliminar a '+vUDOC.name+'?'))return;load(true);
+  try{await deleteDoc(doc(db,'users',vUID));closeM('m-dui');toast('Rechazado','err');await renderAll();load(false);}
+  catch(e){toast('Error','err');load(false);}
 }
 
-// Puntos
+// PUNTOS
 window.oPts=(id,name,pts)=>{
-  eUID=id;
-  document.getElementById('m-pts-sub').textContent='Ajuste para: '+name+' — actual: '+pts+' pts';
+  eUID=id;document.getElementById('m-pts-sub').textContent=name+' — actual: '+pts+' pts';
   document.getElementById('m-pts-v').value='';document.getElementById('m-pts-n').value='';
   document.getElementById('m-pts').classList.add('open');
 }
-
 window.confPts=async()=>{
   const pts=parseInt(document.getElementById('m-pts-v').value);
   const note=document.getElementById('m-pts-n').value.trim()||'Ajuste admin';
   if(isNaN(pts)||pts===0){toast('Ingresá los puntos','err');return;}
-  load(true,'Aplicando ajuste...');
+  load(true,'Aplicando...');
   try{
-    const entry={earn:pts>0,name:note,pts:Math.abs(pts),date:fDN()};
-    await updateDoc(doc(db,'users',eUID),{
-      points:increment(pts),
-      history:arrayUnion(entry)
-    });
-    await addDoc(collection(db,'transactions'),{
-      userId:eUID,user:'Admin',station:note,
-      pts:Math.abs(pts),type:pts>0?'earn':'redeem',date:fDN(),ts:Date.now()
-    });
-    closeM('m-pts');toast((pts>0?'+':'')+pts+' pts aplicados ✓','ok');
-    await renderAll();load(false);
-  }catch(e){toast('Error al ajustar','err');load(false);}
+    await updateDoc(doc(db,'users',eUID),{points:increment(pts),history:arrayUnion({earn:pts>0,name:note,pts:Math.abs(pts),date:fDN()})});
+    await addDoc(collection(db,'transactions'),{userId:eUID,user:'Admin',station:note,pts:Math.abs(pts),type:pts>0?'earn':'redeem',date:fDN(),ts:Date.now()});
+    closeM('m-pts');toast((pts>0?'+':'')+pts+' pts aplicados ✓','ok');await renderAll();load(false);
+  }catch(e){toast('Error','err');load(false);}
 }
 
-// Premios
-window.oRw=async id=>{
-  eRID=id;
-  const rewards=await getRewards();
-  const r=rewards.find(x=>x.id===id);
-  document.getElementById('m-rw-t').textContent='🎁 '+r.name;
-  document.getElementById('m-rw-sub').textContent='Costo actual: '+r.cost+' puntos';
-  document.getElementById('m-rw-v').value=r.cost;
+// TRANSACCIONES
+async function rTx(){
+  try{
+    const snap=await getDocs(query(collection(db,'transactions'),orderBy('ts','desc'),limit(50)));
+    const el=document.getElementById('r-tx');
+    if(snap.empty){el.innerHTML='<div class="empty">Sin transacciones aún</div>';return;}
+    el.innerHTML=snap.docs.map(d=>{const t=d.data();return `<div class="tx-row"><div class="tx-ic" style="background:${t.type==='earn'?'rgba(224,32,32,.1)':'rgba(34,197,94,.1)'}">${t.type==='earn'?'⛽':'🎁'}</div><div class="tx-info"><div class="tx-name">${t.user}</div><div class="tx-det">${t.station||t.reward||'—'} · ${t.date}</div></div><div class="tx-pts ${t.type==='earn'?'earn':'spend'}">${t.type==='earn'?'+':'-'}${t.pts}</div></div>`;}).join('');
+  }catch(e){document.getElementById('r-tx').innerHTML='<div class="empty">Error al cargar</div>';}
+}
+
+// ESTACIONES
+async function rStn(){
+  const el=document.getElementById('r-stn');if(!el)return;
+  const stns=await getStations();
+  if(!stns.length){el.innerHTML='<div class="empty">Sin estaciones</div>';return;}
+  el.innerHTML=stns.map(s=>`
+    <div class="item-row">
+      <div style="font-size:22px">⛽</div>
+      <div class="item-info"><div class="item-name">${s.name}</div><div class="item-sub">📍 ${s.addr}</div></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        <div class="item-val">${s.multiplier>1?'★ '+s.multiplier+'×':'1pt/$1'}</div>
+        <button class="btn-sm" style="background:var(--goldbg);border:1px solid var(--goldborder);color:var(--gold)" onclick="oStn('${s.id}')">Editar</button>
+      </div>
+    </div>`).join('');
+}
+window.oStn=async id=>{
+  eSID=id;
+  if(id){const stns=await getStations();const s=stns.find(x=>x.id===id);if(s){document.getElementById('m-stn-name').value=s.name;document.getElementById('m-stn-addr').value=s.addr;document.getElementById('m-stn-multi').value=s.multiplier;document.getElementById('m-stn-t').textContent='⛽ Editar Estación';}}
+  else{document.getElementById('m-stn-name').value='';document.getElementById('m-stn-addr').value='';document.getElementById('m-stn-multi').value='1';document.getElementById('m-stn-t').textContent='⛽ Nueva Estación';}
+  document.getElementById('m-stn').classList.add('open');
+}
+window.confStn=async()=>{
+  const name=document.getElementById('m-stn-name').value.trim();
+  const addr=document.getElementById('m-stn-addr').value.trim()||'El Salvador';
+  const multi=parseFloat(document.getElementById('m-stn-multi').value)||1;
+  if(!name){toast('Ingresá el nombre','err');return;}
+  load(true,'Guardando...');
+  try{
+    const stns=await getStations();
+    if(eSID){const i=stns.findIndex(x=>x.id===eSID);if(i>=0){stns[i]={...stns[i],name,addr,multiplier:multi};}}
+    else stns.push({id:'s'+Date.now(),name,addr,multiplier:multi});
+    await setDoc(doc(db,'config','stations'),{list:stns});
+    closeM('m-stn');toast('Estación guardada ✓','ok');await renderAll();load(false);
+  }catch(e){toast('Error','err');load(false);}
+}
+
+// ADMINS ESTACION
+async function rAdmins(){
+  const el=document.getElementById('r-admins');if(!el)return;
+  const admins=await getAdmins();const stns=await getStations();
+  if(!admins.length){el.innerHTML='<div class="empty">Sin admins de estación creados</div>';return;}
+  el.innerHTML=admins.map(a=>{const stn=stns.find(s=>s.id===a.stationId)||{name:'—'};return `
+    <div class="item-row">
+      <div style="width:40px;height:40px;border-radius:10px;background:var(--blue);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:18px;color:#fff;flex-shrink:0">${uI(a.name)}</div>
+      <div class="item-info"><div class="item-name">${a.name}</div><div class="item-sub">👤 ${a.user} · ⛽ ${stn.name}</div></div>
+      <button class="btn-sm" style="background:var(--redbg);border:1px solid var(--redborder);color:var(--red3)" onclick="delAdmin('${a.id}')">Eliminar</button>
+    </div>`;}).join('');
+}
+window.oAdmin=async()=>{
+  const stns=await getStations();
+  document.getElementById('m-adm-stn').innerHTML=stns.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  ['m-adm-name','m-adm-user','m-adm-pass'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('m-admin').classList.add('open');
+}
+window.confAdmin=async()=>{
+  const name=document.getElementById('m-adm-name').value.trim();
+  const user=document.getElementById('m-adm-user').value.trim();
+  const pass=document.getElementById('m-adm-pass').value;
+  const stationId=document.getElementById('m-adm-stn').value;
+  if(!name||!user||!pass){toast('Completá todos los campos','err');return;}
+  if(pass.length<6){toast('Contraseña mínimo 6 caracteres','err');return;}
+  load(true,'Creando...');
+  try{
+    const admins=await getAdmins();
+    if(admins.find(a=>a.user===user)){toast('Ese usuario ya existe','err');load(false);return;}
+    admins.push({id:'adm'+Date.now(),name,user,pass,stationId});
+    await setDoc(doc(db,'config','admins'),{list:admins});
+    closeM('m-admin');toast('Admin creado ✓','ok');await renderAll();load(false);
+  }catch(e){toast('Error','err');load(false);}
+}
+window.delAdmin=async id=>{
+  if(!confirm('¿Eliminar este admin?'))return;load(true);
+  try{const a=await getAdmins();await setDoc(doc(db,'config','admins'),{list:a.filter(x=>x.id!==id)});toast('Admin eliminado','ok');await renderAll();load(false);}
+  catch(e){toast('Error','err');load(false);}
+}
+
+// CAJEROS
+async function rCajeros(){
+  const el=document.getElementById('r-cajeros');if(!el)return;
+  const caj=await getCajeros();const stns=await getStations();
+  const filtered=CU.role==='station'?caj.filter(c=>c.stationId===CU.stationId):caj;
+  if(!filtered.length){el.innerHTML='<div class="empty">Sin cajeros creados aún</div>';return;}
+  el.innerHTML=filtered.map(c=>{const stn=stns.find(s=>s.id===c.stationId)||{name:'—'};return `
+    <div class="item-row">
+      <div style="font-size:22px">🏪</div>
+      <div class="item-info"><div class="item-name">${c.name}</div><div class="item-sub">👤 ${c.user} · 🔑 ${c.pass} · ⛽ ${stn.name}</div></div>
+      <button class="btn-sm" style="background:var(--redbg);border:1px solid var(--redborder);color:var(--red3)" onclick="delCajero('${c.id}')">Eliminar</button>
+    </div>`;}).join('');
+}
+window.oCajero=async()=>{
+  const stns=await getStations();
+  const filtered=CU.role==='station'?stns.filter(s=>s.id===CU.stationId):stns;
+  document.getElementById('m-caj-stn').innerHTML=filtered.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  ['m-caj-name','m-caj-user','m-caj-pass','m-caj-email'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('m-cajero').classList.add('open');
+}
+window.confCajero=async()=>{
+  const name=document.getElementById('m-caj-name').value.trim();
+  const user=document.getElementById('m-caj-user').value.trim();
+  const pass=document.getElementById('m-caj-pass').value;
+  const email=document.getElementById('m-caj-email').value.trim();
+  const stationId=document.getElementById('m-caj-stn').value;
+  if(!name||!user||!pass){toast('Completá todos los campos','err');return;}
+  load(true,'Creando cajero...');
+  try{
+    const caj=await getCajeros();
+    if(caj.find(c=>c.user===user)){toast('Ese usuario ya existe','err');load(false);return;}
+    caj.push({id:'caj'+Date.now(),name,user,pass,email,stationId});
+    await setDoc(doc(db,'config','cajeros'),{list:caj});
+    closeM('m-cajero');toast('Cajero creado ✓','ok');await renderAll();load(false);
+  }catch(e){toast('Error','err');load(false);}
+}
+window.delCajero=async id=>{
+  if(!confirm('¿Eliminar este cajero?'))return;load(true);
+  try{const c=await getCajeros();await setDoc(doc(db,'config','cajeros'),{list:c.filter(x=>x.id!==id)});toast('Cajero eliminado','ok');await renderAll();load(false);}
+  catch(e){toast('Error','err');load(false);}
+}
+
+// PREMIOS
+async function rRw(){
+  const el=document.getElementById('r-rw');if(!el)return;
+  const rw=await getRewards();
+  el.innerHTML=rw.map(r=>`
+    <div class="item-row">
+      <div style="font-size:24px">${r.icon}</div>
+      <div class="item-info"><div class="item-name">${r.name}</div><div class="item-sub">${r.desc}</div><div style="font-family:'Bebas Neue';font-size:15px;color:var(--gold);margin-top:3px">⭐ ${r.cost} pts</div></div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <button class="btn-sm" style="background:var(--goldbg);border:1px solid var(--goldborder);color:var(--gold)" onclick="oRwEdit('${r.id}')">Editar</button>
+        <button class="btn-sm" style="background:var(--redbg);border:1px solid var(--redborder);color:var(--red3)" onclick="delRw('${r.id}')">Eliminar</button>
+      </div>
+    </div>`).join('');
+}
+window.oRwNew=()=>{
+  eRID=null;editRw=false;
+  document.getElementById('m-rw-t').textContent='🎁 Nuevo Premio';
+  ['m-rw-name','m-rw-desc','m-rw-cost'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('m-rw-icon').value='🎁';
   document.getElementById('m-rw').classList.add('open');
 }
-
+window.oRwEdit=async id=>{
+  const rw=await getRewards();const r=rw.find(x=>x.id===id);if(!r)return;
+  eRID=id;editRw=true;
+  document.getElementById('m-rw-t').textContent='✏️ Editar Premio';
+  document.getElementById('m-rw-name').value=r.name;
+  document.getElementById('m-rw-desc').value=r.desc;
+  document.getElementById('m-rw-icon').value=r.icon;
+  document.getElementById('m-rw-cost').value=r.cost;
+  document.getElementById('m-rw').classList.add('open');
+}
 window.confRw=async()=>{
-  const cost=parseInt(document.getElementById('m-rw-v').value);
-  if(!cost||cost<=0){toast('Ingresá un costo válido','err');return;}
+  const name=document.getElementById('m-rw-name').value.trim();
+  const desc=document.getElementById('m-rw-desc').value.trim();
+  const icon=document.getElementById('m-rw-icon').value.trim()||'🎁';
+  const cost=parseInt(document.getElementById('m-rw-cost').value);
+  if(!name||!cost||cost<=0){toast('Completá nombre y costo','err');return;}
   load(true,'Guardando...');
   try{
-    const rewards=await getRewards();
-    const idx=rewards.findIndex(x=>x.id===eRID);
-    if(idx>=0)rewards[idx].cost=cost;
-    await setDoc(doc(db,'config','rewards'),{list:rewards});
-    closeM('m-rw');toast('Premio actualizado ✓','ok');
-    await renderAll();load(false);
-  }catch(e){toast('Error al guardar','err');load(false);}
+    const rw=await getRewards();
+    if(editRw){const i=rw.findIndex(x=>x.id===eRID);if(i>=0)rw[i]={...rw[i],name,desc,icon,cost};}
+    else rw.push({id:'r'+Date.now(),name,desc,icon,cost});
+    await setDoc(doc(db,'config','rewards'),{list:rw});
+    closeM('m-rw');toast('Premio guardado ✓','ok');await renderAll();load(false);
+  }catch(e){toast('Error','err');load(false);}
+}
+window.delRw=async id=>{
+  if(!confirm('¿Eliminar este premio?'))return;load(true);
+  try{const rw=await getRewards();await setDoc(doc(db,'config','rewards'),{list:rw.filter(r=>r.id!==id)});toast('Premio eliminado','ok');await renderAll();load(false);}
+  catch(e){toast('Error','err');load(false);}
 }
 
-window.addRw=async()=>{
-  const name=prompt('Nombre del premio:');if(!name)return;
-  const icon=prompt('Emoji del premio:')||'🎁';
-  const desc=prompt('Descripción breve:')||'';
-  const cost=parseInt(prompt('Costo en puntos:'));
-  if(!cost||cost<=0)return;
-  load(true,'Agregando...');
-  try{
-    const rewards=await getRewards();
-    rewards.push({id:'r'+Date.now(),name,icon,desc,cost});
-    await setDoc(doc(db,'config','rewards'),{list:rewards});
-    toast('Premio agregado ✓','ok');await renderAll();load(false);
-  }catch(e){toast('Error al agregar','err');load(false);}
-}
+// ─── EMPLEADOS / PINes ────────────────────────────────
+const getPines=()=>getCfg('pines',[]);
 
-// Gasolineras
-window.eStn=async id=>{
-  const stations=await getStations();
-  const s=stations.find(x=>x.id===id);
-  const multi=parseFloat(prompt('Multiplicador de puntos para:\n'+s.name+'\n\nActual: '+s.multiplier+'x\n(1 = normal, 1.5 = 50% más puntos):'));
-  if(!multi||multi<=0)return;
-  load(true,'Guardando...');
-  try{
-    const idx=stations.findIndex(x=>x.id===id);
-    if(idx>=0)stations[idx].multiplier=multi;
-    await setDoc(doc(db,'config','stations'),{list:stations});
-    toast('Gasolinera actualizada ✓','ok');await renderAll();load(false);
-  }catch(e){toast('Error al guardar','err');load(false);}
-}
-
-window.addStn=async()=>{
-  const name=prompt('Nombre de la gasolinera:');if(!name)return;
-  const addr=prompt('Dirección:')||'El Salvador';
-  const multi=parseFloat(prompt('Multiplicador de puntos (1 = normal):')||'1');
-  load(true,'Agregando...');
-  try{
-    const stations=await getStations();
-    stations.push({id:'s'+Date.now(),name,addr,multiplier:multi||1});
-    await setDoc(doc(db,'config','stations'),{list:stations});
-    toast('Gasolinera agregada ✓','ok');await renderAll();load(false);
-  }catch(e){toast('Error al agregar','err');load(false);}
-}
-
-// ===== CAJEROS =====
-async function getCajeros(){
-  try{
-    const s=await getDoc(doc(db,'config','cajeros'));
-    return s.exists()?s.data().list:[];
-  }catch{return [];}
-}
-
-async function rCajeros(){
-  const cajeros=await getCajeros();
-  const stations=await getStations();
-  const el=document.getElementById('r-cajeros');
-  if(!cajeros.length){
-    el.innerHTML='<div class="empty">Sin cajeros creados aún.<br>El usuario de prueba cajero1/caja sigue activo.</div>';
-    return;
-  }
-  el.innerHTML=cajeros.map(c=>{
-    const stn=stations.find(s=>s.id===c.stationId)||{name:'Todas'};
-    return `<div class="ur">
-      <div class="ur-av" style="background:#22c55e">🏪</div>
-      <div class="ur-info">
-        <div class="ur-name">${c.name}</div>
-        <div class="ur-detail">👤 ${c.user} · 🔑 ${c.pass}</div>
-        <div class="ur-pts">⛽ ${stn.name}</div>
+async function rEmpleados(){
+  const el=document.getElementById('r-empleados');if(!el)return;
+  const pines=await getPines();
+  const stns=await getStations();
+  if(!pines.length){el.innerHTML='<div class="empty">Sin PINes registrados aún.<br>Agregá empleados para que puedan autorizar canjes.</div>';return;}
+  el.innerHTML=pines.map(p=>{
+    const stn=stns.find(s=>s.id===p.stationId)||{name:'Todas'};
+    return `<div class="item-row">
+      <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--purple),#7c3aed);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:18px;color:#fff;flex-shrink:0;letter-spacing:2px">${p.pin}</div>
+      <div class="item-info">
+        <div class="item-name">${p.nombre}</div>
+        <div class="item-sub">🔐 PIN: <strong style="color:var(--purple)">${p.pin}</strong> · ⛽ ${stn.name}</div>
       </div>
-      <div class="ur-actions">
-        <button class="btn-sm" style="background:var(--redbg);border:1px solid var(--redborder);color:var(--red3)" onclick="delCajero('${c.id}')">Eliminar</button>
-      </div>
+      <button class="btn-sm" style="background:var(--redbg);border:1px solid var(--redborder);color:var(--red3)" onclick="delPin('${p.id}')">Eliminar</button>
     </div>`;
   }).join('');
 }
 
-window.oCajero=async()=>{
-  const stations=await getStations();
-  const stnOpts=stations.map((s,i)=>`${i+1}. ${s.name}`).join('
-');
-  const name=prompt('Nombre del cajero:');if(!name)return;
-  const user=prompt('Usuario (para iniciar sesión):');if(!user)return;
-  const pass=prompt('Contraseña:');if(!pass)return;
-  const stnIdx=parseInt(prompt('¿Cuál gasolinera?
-
-'+stnOpts+'
-
-Escribí el número:'))-1;
-  if(isNaN(stnIdx)||!stations[stnIdx])return;
-  load(true,'Creando cajero...');
-  try{
-    const cajeros=await getCajeros();
-    // Verificar que el usuario no exista
-    if(cajeros.find(c=>c.user===user)){toast('Ese usuario ya existe','err');load(false);return;}
-    cajeros.push({id:'c'+Date.now(),name,user,pass,stationId:stations[stnIdx].id});
-    await setDoc(doc(db,'config','cajeros'),{list:cajeros});
-    toast('Cajero creado ✓','ok');await renderAll();load(false);
-  }catch(e){toast('Error al crear cajero','err');load(false);}
+window.oEmpleado=async()=>{
+  const stns=await getStations();
+  const sel=document.getElementById('m-emp-stn');
+  sel.innerHTML='<option value="todas">Todas las estaciones</option>'+stns.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  document.getElementById('m-emp-name').value='';
+  document.getElementById('m-emp-pin').value='';
+  document.getElementById('m-empleado').classList.add('open');
 }
 
-window.delCajero=async id=>{
-  if(!confirm('¿Eliminar este cajero?'))return;
-  load(true,'Eliminando...');
+window.confEmpleado=async()=>{
+  const nombre=document.getElementById('m-emp-name').value.trim();
+  const pin=document.getElementById('m-emp-pin').value.trim();
+  const stationId=document.getElementById('m-emp-stn').value;
+  if(!nombre){toast('Ingresá el nombre del empleado','err');return;}
+  if(!/^\d{4}$/.test(pin)){toast('El PIN debe ser exactamente 4 dígitos','err');return;}
+  load(true,'Guardando...');
   try{
-    const cajeros=await getCajeros();
-    await setDoc(doc(db,'config','cajeros'),{list:cajeros.filter(c=>c.id!==id)});
-    toast('Cajero eliminado','ok');await renderAll();load(false);
-  }catch(e){toast('Error al eliminar','err');load(false);}
+    const pines=await getPines();
+    if(pines.find(p=>p.pin===pin)){toast('Ese PIN ya está en uso','err');load(false);return;}
+    pines.push({id:'pin'+Date.now(),nombre,pin,stationId});
+    await setDoc(doc(db,'config','pines'),{list:pines});
+    closeM('m-empleado');toast('PIN creado ✓','ok');
+    await renderAll();load(false);
+  }catch(e){toast('Error','err');load(false);}
+}
+
+window.delPin=async id=>{
+  if(!confirm('¿Eliminar este PIN de empleado?'))return;load(true);
+  try{
+    const pines=await getPines();
+    await setDoc(doc(db,'config','pines'),{list:pines.filter(p=>p.id!==id)});
+    toast('PIN eliminado','ok');await renderAll();load(false);
+  }catch(e){toast('Error','err');load(false);}
 }
 </script>
 </body>

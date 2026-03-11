@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Zuno – Cajero</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  // Inicializar EmailJS — reemplazá 'TU_PUBLIC_KEY' con tu clave de emailjs.com
+  (function(){try{emailjs.init({publicKey:'TU_PUBLIC_KEY'});}catch(e){}})();
+</script>
 <style>
 :root{--bg:#0a0a0a;--s1:#111;--s2:#1a1a1a;--s3:#222;--border:#2a2a2a;--red:#e02020;--red2:#ff3333;--red3:#ff6666;--redbg:rgba(224,32,32,0.08);--redborder:rgba(224,32,32,0.25);--green:#22c55e;--greenbg:rgba(34,197,94,0.08);--greenborder:rgba(34,197,94,0.25);--text:#f5f5f5;--text2:#a0a0a0;--text3:#555}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -116,7 +121,10 @@ body::before{content:'';position:fixed;top:-100px;left:50%;transform:translateX(
 <div id="s-main" class="scr">
   <div class="topbar">
     <div><h1>🏪 Panel Cajero · Zuno</h1><div class="stn" id="stn-name">—</div></div>
-    <button class="out-btn" onclick="doLogout()">Salir 🚪</button>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button style="padding:7px 12px;background:var(--greenbg);border:1px solid var(--greenborder);border-radius:8px;color:var(--green);font-size:11px;font-weight:700;cursor:pointer" onclick="abrirCierre()">🏁 Cierre</button>
+      <button class="out-btn" onclick="doLogout()">Salir 🚪</button>
+    </div>
   </div>
   <div class="search-box">
     <label>Buscar cliente por código ZN o teléfono</label>
@@ -152,8 +160,17 @@ body::before{content:'';position:fixed;top:-100px;left:50%;transform:translateX(
     </div>
     <button class="btn btn-green" onclick="credit()">✓ Acreditar puntos</button>
     <div class="rw-section" id="rw-sec" style="display:none">
-      <h4>🎁 Premios disponibles</h4>
-      <div class="rm-list" id="rm-list"></div>
+      <h4>🎁 Validar canje con OTP</h4>
+      <div style="background:var(--s2);border:1.5px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:10px;transition:border-color .2s" id="otp-input-wrap">
+        <div style="padding:10px 14px;font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:700;border-bottom:1px solid var(--border)">Código OTP del cliente</div>
+        <div style="display:flex;align-items:center">
+          <input type="text" id="otp-inp" placeholder="000000" maxlength="6" inputmode="numeric"
+            style="flex:1;padding:16px;background:transparent;border:none;color:var(--text);font-family:'Bebas Neue';font-size:32px;letter-spacing:6px;outline:none;text-align:center"
+            oninput="this.value=this.value.replace(/[^0-9]/g,'');otpCheck()">
+        </div>
+      </div>
+      <div id="otp-status" style="display:none;border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:10px;line-height:1.6"></div>
+      <button id="otp-btn" class="btn btn-green" onclick="validateOTP()" style="display:none">✓ Confirmar canje</button>
     </div>
   </div>
   <div class="stats-section">
@@ -174,6 +191,79 @@ body::before{content:'';position:fixed;top:-100px;left:50%;transform:translateX(
   <div class="succ-sub" id="s-sub">—</div>
   <button class="btn btn-green" style="width:220px;margin-top:8px" onclick="closeSucc()">Siguiente cliente →</button>
 </div>
+<!-- MODAL PIN EMPLEADO -->
+<div style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);backdrop-filter:blur(16px);z-index:300;align-items:center;justify-content:center;padding:28px" id="m-pin">
+  <div style="background:var(--s1);border:1px solid var(--border);border-top:3px solid var(--green);border-radius:20px;padding:28px 24px;width:100%;max-width:360px;text-align:center;animation:scrIn .3s ease">
+    <div style="font-size:36px;margin-bottom:12px">🔐</div>
+    <div style="font-family:'Bebas Neue';font-size:24px;letter-spacing:1px;margin-bottom:6px">PIN de empleado</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:24px;line-height:1.6">Ingresá tu PIN de 4 dígitos<br>para confirmar el canje</div>
+    <!-- Dots display -->
+    <div style="display:flex;justify-content:center;gap:14px;margin-bottom:24px" id="pin-dots">
+      <div style="width:18px;height:18px;border-radius:50%;border:2px solid var(--border);transition:all .15s" id="pd0"></div>
+      <div style="width:18px;height:18px;border-radius:50%;border:2px solid var(--border);transition:all .15s" id="pd1"></div>
+      <div style="width:18px;height:18px;border-radius:50%;border:2px solid var(--border);transition:all .15s" id="pd2"></div>
+      <div style="width:18px;height:18px;border-radius:50%;border:2px solid var(--border);transition:all .15s" id="pd3"></div>
+    </div>
+    <!-- Teclado numérico -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px" id="pin-kbd">
+      <button onclick="pinKey('1')" style="padding:18px;background:var(--s2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'Bebas Neue';font-size:22px;cursor:pointer;transition:all .15s" onmousedown="this.style.background='var(--s3)'">1</button>
+      <button onclick="pinKey('2')" style="padding:18px;background:var(--s2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'Bebas Neue';font-size:22px;cursor:pointer;transition:all .15s" onmousedown="this.style.background='var(--s3)'">2</button>
+      <button onclick="pinKey('3')" style="padding:18px;background:var(--s2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'Bebas Neue';font-size:22px;cursor:pointer;transition:all .15s" onmousedown="this.style.background='var(--s3)'">3</button>
+      <button onclick="pinKey('4')" style="padding:18px;background:var(--s2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'Bebas Neue';font-size:22px;cursor:pointer;transition:all .15s" onmousedown="this.style.background='var(--s3)'">4</button>
+      <button onclick="pinKey('5')" style="padding:18px;background:var(--s2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'Bebas Neue';font-size:22px;cursor:pointer;transition:all .15s" onmousedown="this.style.background='var(--s3)'">5</button>
+      <button onclick="pinKey('6')" style="padding:18px;background:var(--s2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'Bebas Neue';font-size:22px;cursor:pointer;transition:all .15s" onmousedown="this.style.background='var(--s3)'">6</button>
+      <button onclick="pinKey('7')" style="padding:18px;background:var(--s2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'Bebas Neue';font-size:22px;cursor:pointer;transition:all .15s" onmousedown="this.style.background='var(--s3)'">7</button>
+      <button onclick="pinKey('8')" style="padding:18px;background:var(--s2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'Bebas Neue';font-size:22px;cursor:pointer;transition:all .15s" onmousedown="this.style.background='var(--s3)'">8</button>
+      <button onclick="pinKey('9')" style="padding:18px;background:var(--s2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'Bebas Neue';font-size:22px;cursor:pointer;transition:all .15s" onmousedown="this.style.background='var(--s3)'">9</button>
+      <button onclick="pinDel()" style="padding:18px;background:var(--redbg);border:1px solid var(--redborder);border-radius:12px;color:var(--red3);font-size:18px;cursor:pointer">⌫</button>
+      <button onclick="pinKey('0')" style="padding:18px;background:var(--s2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'Bebas Neue';font-size:22px;cursor:pointer;transition:all .15s" onmousedown="this.style.background='var(--s3)'">0</button>
+      <button onclick="pinClear()" style="padding:18px;background:var(--s3);border:1px solid var(--border);border-radius:12px;color:var(--text2);font-size:11px;font-weight:700;cursor:pointer">CLR</button>
+    </div>
+    <div id="pin-error" style="display:none;background:var(--redbg);border:1px solid var(--redborder);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--red3);margin-bottom:12px">❌ PIN incorrecto. Intentá de nuevo.</div>
+    <button onclick="cancelPin()" style="width:100%;padding:12px;background:transparent;border:1.5px solid var(--border);border-radius:10px;color:var(--text2);font-family:'Bebas Neue';font-size:16px;cursor:pointer">Cancelar</button>
+  </div>
+</div>
+
+<!-- MODAL CIERRE DE TURNO -->
+<div style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);backdrop-filter:blur(16px);z-index:300;align-items:center;justify-content:center;padding:28px" id="m-cierre">
+  <div style="background:var(--s1);border:1px solid var(--border);border-top:3px solid var(--green);border-radius:20px;padding:28px 24px;width:100%;max-width:380px;animation:scrIn .3s ease;max-height:85vh;overflow-y:auto">
+    <div style="font-family:'Bebas Neue';font-size:26px;letter-spacing:1px;margin-bottom:4px">🏁 Cierre de turno</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:20px" id="cierre-fecha">—</div>
+    <!-- Resumen -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px">
+      <div style="background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:6px">Clientes</div>
+        <div style="font-family:'Bebas Neue';font-size:32px;color:var(--green)" id="c-cl">0</div>
+      </div>
+      <div style="background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:6px">Ventas</div>
+        <div style="font-family:'Bebas Neue';font-size:32px;color:var(--green)" id="c-sales">$0</div>
+      </div>
+      <div style="background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:6px">Pts dados</div>
+        <div style="font-family:'Bebas Neue';font-size:32px;color:var(--red2)" id="c-pts">0</div>
+      </div>
+      <div style="background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:6px">Canjes</div>
+        <div style="font-family:'Bebas Neue';font-size:32px;color:#f5a623" id="c-rw">0</div>
+      </div>
+    </div>
+    <!-- Canjes del turno -->
+    <div style="margin-bottom:20px">
+      <div style="font-family:'Bebas Neue';font-size:16px;letter-spacing:1px;color:var(--text2);margin-bottom:10px">🎁 Canjes del turno</div>
+      <div id="cierre-canjes" style="display:flex;flex-direction:column;gap:6px"></div>
+    </div>
+    <!-- Email -->
+    <div style="margin-bottom:14px">
+      <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:8px">Enviar resumen a</div>
+      <input type="email" id="cierre-email" placeholder="correo@ejemplo.com" style="width:100%;padding:13px 16px;background:var(--s2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:'Outfit',sans-serif;font-size:15px;outline:none">
+    </div>
+    <div style="background:var(--greenbg);border:1px solid var(--greenborder);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--green);margin-bottom:16px;line-height:1.6">📧 El resumen se enviará vía EmailJS. Configurá tu cuenta en emailjs.com</div>
+    <button onclick="enviarCierre()" style="display:block;width:100%;padding:14px;background:linear-gradient(135deg,var(--green),#16a34a);border:none;border-radius:10px;font-family:'Bebas Neue';font-size:18px;letter-spacing:1.5px;color:#000;cursor:pointer;margin-bottom:8px">📧 Enviar y cerrar turno</button>
+    <button onclick="cerrarSinEmail()" style="display:block;width:100%;padding:14px;background:transparent;border:1.5px solid var(--border);border-radius:10px;font-family:'Bebas Neue';font-size:16px;letter-spacing:1px;color:var(--text2);cursor:pointer">Cerrar sin enviar</button>
+  </div>
+</div>
+
 <div class="loading" id="loading"><div class="spinner"></div><p id="load-txt">Cargando...</p></div>
 <div class="toast" id="toast"></div>
 
@@ -208,7 +298,8 @@ const DEFAULT_REWARDS=[
 
 // cajero1/caja = usuario de prueba siempre activo
 const DEFAULT_CASHIER={u:'cajero1',p:'caja'};
-let SS=null,FC=null,TODAY={cl:0,pts:0,rw:0,sales:0};
+let SS=null,FC=null,TODAY={cl:0,pts:0,rw:0,sales:0,canjes:[]};
+let PIN_INPUT='', PIN_OTP_DATA=null; // Para el flujo OTP→PIN
 
 // Load stations
 async function loadStations(){
@@ -255,8 +346,9 @@ window.doLogin=async()=>{
     const sid=cajeroData?cajeroData.stationId:document.getElementById('l-stn').value;
     const snap=await getDoc(doc(db,'config','stations'));
     const stations=snap.exists()?snap.data().list:[];
-    SS=stations.find(s=>s.id===sid)||{id:sid,name:'Gasolinera Zuno',multiplier:1};
-    document.getElementById('stn-name').textContent='⛽ '+SS.name;
+    const stnData=stations.find(s=>s.id===sid)||{id:sid,name:'Gasolinera Zuno',multiplier:1};
+    SS={...stnData, cajeroName:cajeroData?cajeroData.name:u, cajeroEmail:cajeroData?cajeroData.email||'':''};
+    document.getElementById('stn-name').textContent='⛽ '+SS.name+' · '+SS.cajeroName;
     load(false);
     document.getElementById('s-login').classList.remove('on');
     document.getElementById('s-main').classList.add('on');
@@ -345,43 +437,274 @@ async function getRewards(){
   catch{return DEFAULT_REWARDS;}
 }
 
-async function renderRw(u){
-  const rewards=await getRewards();
-  const aff=rewards.filter(r=>u.verified&&u.points>=r.cost);
+function renderRw(u){
   const sec=document.getElementById('rw-sec');
-  if(!aff.length){sec.style.display='none';return;}
+  if(!u.verified){sec.style.display='none';return;}
   sec.style.display='block';
-  document.getElementById('rm-list').innerHTML=aff.map(r=>`
-    <div class="rm-item">
-      <div class="rm-ic">${r.icon}</div>
-      <div class="rm-info"><div class="rm-name">${r.name}</div><div class="rm-cost">⭐ ${r.cost} pts</div></div>
-      <button class="rm-btn" onclick="doRw('${r.id}')">Canjear</button>
-    </div>`).join('');
+  // Limpiar OTP input
+  const inp=document.getElementById('otp-inp');
+  if(inp){inp.value='';inp.style.borderColor='';}
+  document.getElementById('otp-status').style.display='none';
+  document.getElementById('otp-btn').style.display='none';
 }
 
-window.doRw=async(rid)=>{
-  if(!FC)return;
-  const rewards=await getRewards();
-  const r=rewards.find(x=>x.id===rid);
-  if(!r||FC.points<r.cost){toast('Puntos insuficientes','err');return;}
-  load(true,'Procesando canje...');
+window.otpCheck=()=>{
+  const v=document.getElementById('otp-inp').value;
+  const btn=document.getElementById('otp-btn');
+  const wrap=document.getElementById('otp-input-wrap');
+  if(v.length===6){
+    btn.style.display='block';
+    wrap.style.borderColor='var(--green)';
+  } else {
+    btn.style.display='none';
+    wrap.style.borderColor='var(--border)';
+  }
+  document.getElementById('otp-status').style.display='none';
+}
+
+window.validateOTP=async()=>{
+  const code=document.getElementById('otp-inp').value.trim();
+  if(code.length!==6){toast('Ingresá el código de 6 dígitos','err');return;}
+  load(true,'Validando código...');
   try{
-    const entry={earn:false,name:r.name,pts:r.cost,date:fD()};
-    await updateDoc(doc(db,'users',FC.id),{
-      points:increment(-r.cost),
-      saved:increment(r.cost*0.02),
+    const otpSnap=await getDoc(doc(db,'otps',code));
+    const status=document.getElementById('otp-status');
+    
+    if(!otpSnap.exists()){
+      load(false);
+      status.style.display='block';
+      status.style.background='var(--redbg)';status.style.border='1px solid var(--redborder)';status.style.color='var(--red3)';
+      status.textContent='❌ Código incorrecto. Verificá con el cliente.';
+      return;
+    }
+    
+    const otp=otpSnap.data();
+    
+    if(otp.used){
+      load(false);
+      status.style.display='block';
+      status.style.background='var(--redbg)';status.style.border='1px solid var(--redborder)';status.style.color='var(--red3)';
+      status.textContent='❌ Este código ya fue utilizado.';
+      return;
+    }
+    
+    if(Date.now()>otp.expiresAt){
+      load(false);
+      status.style.display='block';
+      status.style.background='var(--redbg)';status.style.border='1px solid var(--redborder)';status.style.color='var(--red3)';
+      status.textContent='⏰ Código expirado. Pedile al cliente que genere uno nuevo.';
+      return;
+    }
+    
+    // Verificar que el cliente buscado coincide con el OTP
+    if(FC && otp.userId!==FC.id){
+      load(false);
+      status.style.display='block';
+      status.style.background='var(--redbg)';status.style.border='1px solid var(--redborder)';status.style.color='var(--red3)';
+      status.textContent='❌ Este código no pertenece al cliente buscado.';
+      return;
+    }
+    
+    // Verificar puntos suficientes
+    const clientSnap=await getDoc(doc(db,'users',otp.userId));
+    if(!clientSnap.exists()){load(false);toast('Cliente no encontrado','err');return;}
+    const clientData=clientSnap.data();
+    
+    if(clientData.points<otp.rewardCost){
+      load(false);
+      status.style.display='block';
+      status.style.background='var(--redbg)';status.style.border='1px solid var(--redborder)';status.style.color='var(--red3)';
+      status.textContent='❌ El cliente no tiene suficientes puntos.';
+      return;
+    }
+    
+    // ✅ Todo OK — procesar canje
+    const entry={earn:false,name:otp.rewardName,pts:otp.rewardCost,date:fD()};
+    await updateDoc(doc(db,'users',otp.userId),{
+      points:increment(-otp.rewardCost),
+      saved:increment(otp.rewardCost*0.02),
       history:arrayUnion(entry)
     });
+    // Marcar OTP como usado
+    await updateDoc(doc(db,'otps',code),{used:true,usedAt:Date.now(),usedBy:SS?SS.name:'Cajero'});
     await addDoc(collection(db,'transactions'),{
-      userId:FC.id,user:FC.name,reward:r.name,
-      pts:r.cost,type:'redeem',date:fD(),ts:Date.now()
+      userId:otp.userId,user:otp.userName,reward:otp.rewardName,
+      pts:otp.rewardCost,type:'redeem',date:fD(),ts:Date.now()
     });
-    TODAY.rw++;FC.points-=r.cost;
+    TODAY.rw++;
+    if(FC&&FC.id===otp.userId){FC.points-=otp.rewardCost;document.getElementById('cc-pts').textContent=FC.points.toLocaleString()+' puntos';}
     load(false);updStats();
-    document.getElementById('cc-pts').textContent=FC.points.toLocaleString()+' puntos';
-    renderRw(FC);
-    showSucc('🎁','¡Premio canjeado!',r.icon+' '+r.name,'Entrégale el premio a '+FC.name);
-  }catch(e){toast('Error al canjear','err');load(false);}
+    // Limpiar
+    document.getElementById('otp-inp').value='';
+    document.getElementById('otp-btn').style.display='none';
+    document.getElementById('otp-input-wrap').style.borderColor='var(--border)';
+    document.getElementById('otp-status').style.display='none';
+    // Antes de procesar → pedir PIN de empleado
+    load(false);
+    PIN_OTP_DATA = {code, otp, clientData};
+    abrirPIN();
+  }catch(e){toast('Error al validar OTP','err');load(false);}
+}
+
+// ─── PIN EMPLEADO ─────────────────────────────────────
+function abrirPIN(){
+  PIN_INPUT='';
+  updatePinDots();
+  document.getElementById('pin-error').style.display='none';
+  document.getElementById('m-pin').style.display='flex';
+}
+
+window.pinKey=digit=>{
+  if(PIN_INPUT.length>=4)return;
+  PIN_INPUT+=digit;
+  updatePinDots();
+  if(PIN_INPUT.length===4)setTimeout(checkPIN,200);
+}
+
+window.pinDel=()=>{PIN_INPUT=PIN_INPUT.slice(0,-1);updatePinDots();}
+window.pinClear=()=>{PIN_INPUT='';updatePinDots();}
+window.cancelPin=()=>{PIN_INPUT='';PIN_OTP_DATA=null;document.getElementById('m-pin').style.display='none';}
+
+function updatePinDots(){
+  for(let i=0;i<4;i++){
+    const d=document.getElementById('pd'+i);
+    if(d){d.style.background=i<PIN_INPUT.length?'var(--green)':'transparent';d.style.borderColor=i<PIN_INPUT.length?'var(--green)':'var(--border)';}
+  }
+}
+
+async function checkPIN(){
+  // Buscar PIN en Firebase
+  try{
+    const pinsSnap=await getDoc(doc(db,'config','pines'));
+    const pines=pinsSnap.exists()?pinsSnap.data().list:[];
+    const empleado=pines.find(p=>p.pin===PIN_INPUT);
+    if(!empleado){
+      document.getElementById('pin-error').style.display='block';
+      PIN_INPUT='';updatePinDots();return;
+    }
+    // PIN correcto → procesar canje
+    document.getElementById('m-pin').style.display='none';
+    document.getElementById('pin-error').style.display='none';
+    await procesarCanje(empleado);
+  }catch(e){
+    document.getElementById('pin-error').style.display='block';
+    PIN_INPUT='';updatePinDots();
+  }
+}
+
+async function procesarCanje(empleado){
+  if(!PIN_OTP_DATA)return;
+  const {code,otp,clientData}=PIN_OTP_DATA;
+  load(true,'Procesando canje...');
+  try{
+    const entry={earn:false,name:otp.rewardName,pts:otp.rewardCost,date:fD()};
+    await updateDoc(doc(db,'users',otp.userId),{
+      points:increment(-otp.rewardCost),
+      saved:increment(otp.rewardCost*0.02),
+      history:arrayUnion(entry)
+    });
+    await updateDoc(doc(db,'otps',code),{used:true,usedAt:Date.now(),usedBy:SS?SS.name:'Cajero',empleado:empleado.nombre});
+    await addDoc(collection(db,'transactions'),{
+      userId:otp.userId,user:otp.userName,reward:otp.rewardName,
+      pts:otp.rewardCost,type:'redeem',date:fD(),ts:Date.now(),
+      empleado:empleado.nombre,pin:PIN_INPUT,estacion:SS?SS.name:'—'
+    });
+    TODAY.rw++;
+    TODAY.canjes.push({reward:otp.rewardName,client:otp.userName,empleado:empleado.nombre,pts:otp.rewardCost,hora:new Date().toLocaleTimeString('es-SV')});
+    if(FC&&FC.id===otp.userId){FC.points-=otp.rewardCost;document.getElementById('cc-pts').textContent=FC.points.toLocaleString()+' puntos';}
+    PIN_OTP_DATA=null;PIN_INPUT='';
+    load(false);updStats();
+    document.getElementById('otp-inp').value='';
+    document.getElementById('otp-btn').style.display='none';
+    document.getElementById('otp-input-wrap').style.borderColor='var(--border)';
+    document.getElementById('otp-status').style.display='none';
+    showSucc('🎁','¡Canje validado!',otp.rewardName,'Por '+empleado.nombre+' · para '+otp.userName);
+  }catch(e){toast('Error al procesar','err');load(false);}
+}
+
+// ─── CIERRE DE TURNO ──────────────────────────────────
+window.abrirCierre=()=>{
+  const now=new Date();
+  document.getElementById('cierre-fecha').textContent=now.toLocaleDateString('es-SV')+' · '+now.toLocaleTimeString('es-SV')+' · '+(SS?SS.name:'—');
+  document.getElementById('c-cl').textContent=TODAY.cl;
+  document.getElementById('c-sales').textContent='$'+TODAY.sales.toFixed(2);
+  document.getElementById('c-pts').textContent=TODAY.pts.toLocaleString();
+  document.getElementById('c-rw').textContent=TODAY.rw;
+  // Canjes del turno
+  const canjesEl=document.getElementById('cierre-canjes');
+  if(!TODAY.canjes.length){canjesEl.innerHTML='<div style="text-align:center;color:var(--text3);padding:16px;font-size:13px">Sin canjes en este turno</div>';}
+  else{canjesEl.innerHTML=TODAY.canjes.map(c=>`
+    <div style="background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px">
+      <div style="font-size:20px">🎁</div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:13px">${c.reward}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">Cliente: ${c.client} · ${c.hora}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:11px;color:var(--green);font-weight:700">${c.empleado}</div>
+        <div style="font-size:11px;color:var(--text3)">-${c.pts} pts</div>
+      </div>
+    </div>`).join('');}
+  // Auto-llenar correo si existe
+  if(SS&&SS.cajeroEmail) document.getElementById('cierre-email').value=SS.cajeroEmail;
+  document.getElementById('m-cierre').style.display='flex';
+}
+
+window.cerrarSinEmail=()=>{
+  document.getElementById('m-cierre').style.display='none';
+  resetTurno();
+  toast('Turno cerrado ✓','ok');
+}
+
+window.enviarCierre=async()=>{
+  const email=document.getElementById('cierre-email').value.trim();
+  if(!email){toast('Ingresá un correo','err');return;}
+  load(true,'Enviando resumen...');
+  // Construir cuerpo del correo
+  const now=new Date();
+  const canjesTexto=TODAY.canjes.length?TODAY.canjes.map(c=>`• ${c.reward} — Cliente: ${c.client} — Empleado: ${c.empleado} — ${c.hora} — ${c.pts} pts`).join('\n'):'Sin canjes en este turno';
+  const cuerpo=`CIERRE DE TURNO — ZUNO
+=========================
+Estación: ${SS?SS.name:'—'}
+Fecha: ${now.toLocaleDateString('es-SV')} ${now.toLocaleTimeString('es-SV')}
+
+RESUMEN DEL TURNO
+─────────────────
+Clientes atendidos: ${TODAY.cl}
+Ventas totales:     $${TODAY.sales.toFixed(2)}
+Puntos acreditados: ${TODAY.pts}
+Canjes procesados:  ${TODAY.rw}
+
+DETALLE DE CANJES
+─────────────────
+${canjesTexto}
+
+—
+Sistema Zuno · El Salvador 🇸🇻`;
+
+  try{
+    // Usar EmailJS (debe estar configurado)
+    if(typeof emailjs!=='undefined'){
+      await emailjs.send('zuno_service','zuno_cierre',{
+        to_email:email,
+        subject:'Cierre de turno Zuno — '+(SS?SS.name:'')+'  '+now.toLocaleDateString('es-SV'),
+        message:cuerpo
+      });
+      toast('📧 Correo enviado ✓','ok');
+    } else {
+      // Fallback: copiar al portapapeles
+      await navigator.clipboard.writeText(cuerpo).catch(()=>{});
+      toast('EmailJS no configurado — resumen copiado ✓','ok');
+    }
+    load(false);
+    document.getElementById('m-cierre').style.display='none';
+    resetTurno();
+  }catch(e){toast('Error al enviar — resumen copiado','err');load(false);}
+}
+
+function resetTurno(){
+  TODAY={cl:0,pts:0,rw:0,sales:0,canjes:[]};
+  updStats();
 }
 
 function updStats(){
