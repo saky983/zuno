@@ -686,8 +686,8 @@ Sistema Zuno · El Salvador 🇸🇻`;
     // Usar EmailJS (debe estar configurado)
     if(typeof emailjs!=='undefined'){
       await emailjs.send('service_64nj4qc','template_ldtn2p7',{
-        to_email:email,
-        subject:'Cierre de turno Zuno — '+(SS?SS.name:'')+'  '+now.toLocaleDateString('es-SV'),
+        email:email,
+        subject:(SS?SS.name:'Zuno')+' · '+now.toLocaleDateString('es-SV'),
         message:cuerpo
       });
       toast('📧 Correo enviado ✓','ok');
