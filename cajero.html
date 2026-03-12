@@ -518,28 +518,7 @@ window.validateOTP=async()=>{
       return;
     }
     
-    // ✅ Todo OK — procesar canje
-    const entry={earn:false,name:otp.rewardName,pts:otp.rewardCost,date:fD()};
-    await updateDoc(doc(db,'users',otp.userId),{
-      points:increment(-otp.rewardCost),
-      saved:increment(otp.rewardCost*0.02),
-      history:arrayUnion(entry)
-    });
-    // Marcar OTP como usado
-    await updateDoc(doc(db,'otps',code),{used:true,usedAt:Date.now(),usedBy:SS?SS.name:'Cajero'});
-    await addDoc(collection(db,'transactions'),{
-      userId:otp.userId,user:otp.userName,reward:otp.rewardName,
-      pts:otp.rewardCost,type:'redeem',date:fD(),ts:Date.now()
-    });
-    TODAY.rw++;
-    if(FC&&FC.id===otp.userId){FC.points-=otp.rewardCost;document.getElementById('cc-pts').textContent=FC.points.toLocaleString()+' puntos';}
-    load(false);updStats();
-    // Limpiar
-    document.getElementById('otp-inp').value='';
-    document.getElementById('otp-btn').style.display='none';
-    document.getElementById('otp-input-wrap').style.borderColor='var(--border)';
-    document.getElementById('otp-status').style.display='none';
-    // Antes de procesar → pedir PIN de empleado
+    // ✅ OTP válido — guardar datos y pedir PIN de empleado
     load(false);
     PIN_OTP_DATA = {code, otp, clientData};
     abrirPIN();
@@ -600,7 +579,7 @@ async function procesarCanje(empleado){
     const entry={earn:false,name:otp.rewardName,pts:otp.rewardCost,date:fD()};
     await updateDoc(doc(db,'users',otp.userId),{
       points:increment(-otp.rewardCost),
-      saved:increment(otp.rewardCost*0.02),
+      totalRedeemed:increment(otp.rewardCost),
       history:arrayUnion(entry)
     });
     await updateDoc(doc(db,'otps',code),{used:true,usedAt:Date.now(),usedBy:SS?SS.name:'Cajero',empleado:empleado.nombre});

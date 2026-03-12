@@ -424,7 +424,7 @@ async function rHome(){
     document.getElementById('hh-av').textContent=uI(CU.name);
     document.getElementById('hh-av').style.background=uC(CU.id);
     document.getElementById('h-pts').textContent=CU.points.toLocaleString();
-    document.getElementById('h-eq').textContent='$'+(CU.points*0.02).toFixed(2);
+    document.getElementById('h-eq').textContent='$'+(CU.points).toFixed(2);
     document.getElementById('pend-ban').style.display=CU.verified?'none':'flex';
     const tier=gT(CU.points),next=TIERS[TIERS.indexOf(tier)+1];
     document.getElementById('h-tier').textContent=tier.n;
